@@ -1,0 +1,56 @@
+{
+	"Pages":[
+		{
+			"Name":"About"
+		},
+		{
+			"Name":"Applications"
+		},
+		{
+			"Name":"Contact"
+		},
+		{
+			"Name":"Designs"
+		}
+	],
+	"Applications":[
+		{
+			"Name":"Spotify",
+			"Date":"30/06/2018",
+			"Description":"A webplayer using spotify API and SDK to show and play all your spotify playlists.",
+			"Image":"/Images/Applications/Spotify.png"
+		}
+	],
+	"Designs":[
+		{
+			"Name":"3DSinWave",
+			"Date":"15/06/2018",
+			"Description":"A 3D image of cubes changing sizes to emulate a drop in water.",
+			"Image":"/Images/Designs/3DSinWave.png"
+		},
+		{
+			"Name":"DotsOnShape",
+			"Date":"15/06/2018",
+			"Description":"Shapes with a different number of verticies with dots travelling along them.",
+			"Image":"/Images/Designs/DotsOnShape.png"
+		},
+		{
+			"Name":"Factorial",
+			"Date":"15/06/2018",
+			"Description":"Draws a factorial tree (at the moment is all preset, will work on getting input from user).",
+			"Image":"/Images/Designs/Factorial.png"
+		},
+		{
+			"Name":"Snowfall",
+			"Date":"15/06/2018",
+			"Description":"It is a snowfall scene where the more snow that has hit the ground the higher the snow layer will appear.",
+			"Image":"/Images/Designs/Snowfall.png"
+		},
+		{
+			"Name":"Starfield",
+			"Date":"15/06/2018",
+			"Description":"A pseudo 3D image of a starfield. Emulates flying through space at high speeds.",
+			"Image":"/Images/Designs/Starfield.png"
+		}
+	]
+}
