@@ -60,12 +60,12 @@ class SpotifyApp extends Component {
 			fetch(
 					document.location.origin+"/spotify/token", {
 						method: "POST",
-						body: JSON.stringify( {
+						body: queryString.stringify( {
 							"code": queryString.parse( window.location.search )
 								.code,
 							"grant_type": 'authorization_code',
 							"redirect_uri": encodeURIComponent(redirect_uri)
-						} ),
+						}, {encode: false, strict: false} ),
 						headers: { 'Content-Type': 'application/json' },
 						mode: 'cors'
 					}
