@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import queryString from 'query-string'
 import Layout from './Data/Designs/Components/Layout.js'
 
 
