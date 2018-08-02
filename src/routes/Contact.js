@@ -5,10 +5,11 @@ import Layout from './Data/Designs/Components/Layout.js'
 let inputAuthor = ""
 let inputComment = ""
 let Comments = []
+let backendURL = ""
 
 class Contact extends Component {
 	postComment() {
-		return fetch( 'http://localhost:8888/contact/comments', {
+		return fetch( bakendURL+'contact/comments', {
 				method: "POST",
 				body: JSON.stringify( {
 					"Comment": {
@@ -24,7 +25,9 @@ class Contact extends Component {
 	}
 
 	componentDidMount() {
-		fetch( 'http://localhost:8888/contact/comments', {
+		if(queryString.parse(window.location).includes("localhost"))backendURL = "http://localhost:8888/"
+		else if (queryString.parse(window.location).includes("heroku")) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
+		fetch( bakendURL+'contact/comments', {
 				method: "GET",
 				headers: { 'content-type': 'application/json' },
 				mode: "cors"
