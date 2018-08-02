@@ -27,6 +27,7 @@ class Contact extends Component {
 	componentDidMount() {
 		if(queryString.parse(window.location).includes("localhost"))backendURL = "http://localhost:8888/"
 		else if (queryString.parse(window.location).includes("heroku")) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
+		console.log(bakendURL)
 		fetch( bakendURL+'contact/comments', {
 				method: "GET",
 				headers: { 'content-type': 'application/json' },
