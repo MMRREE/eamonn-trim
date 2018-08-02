@@ -3,7 +3,13 @@ import Data from './Data/Data.json'
 import Layout from './Data/Designs/Components/Layout.js'
 
 
+let backendURL = ""
 class Applications extends Component {
+	componentDidMount(){
+		if(window.location.href.includes("localhost"))backendURL = "http://localhost:8888/"
+		else if (window.location.href.includes("heroku")) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
+	}
+
 	render() {
 		return (
 			<div className="Applications">
@@ -17,7 +23,7 @@ class Applications extends Component {
 						{Data ? Data.Applications.map((item)=>{
 							if(item.Image === null) item.Image = "/Images/WIP.png"
 							return(
-								<a key={Data.Applications.indexOf(item)} className="Link" style={{backgroundImage:"URL("+item.Image+")"}} href={"http://localhost:3000/Applications/"+item.Name}>
+								<a key={Data.Applications.indexOf(item)} className="Link" style={{backgroundImage:"URL("+item.Image+")"}} href={backendURL+"Applications/"+item.Name}>
 									<div className="Info">
 										<div className="Name">{item.Name}</div>
 										<hr/>

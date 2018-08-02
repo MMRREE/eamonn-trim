@@ -121,7 +121,7 @@ class Routes extends Component{
 								: NotFound}/>
 							: ""
 						}
-						
+
 						{/*Not Found route for any undefined locations*/}
 			  			<Route path="*" component={NotFound}/>
 		 			</Switch>
