@@ -17,7 +17,7 @@ class Applications extends Component {
 						{Data ? Data.Applications.map((item)=>{
 							if(item.Image === null) item.Image = "/Images/WIP.png"
 							return(
-								<a key={Data.Applications.indexOf(item)} className="Link" style={{backgroundImage:"URL("+item.Image+")"}} href={document.location.origin+"Applications/"+item.Name}>
+								<a key={Data.Applications.indexOf(item)} className="Link" style={{backgroundImage:"URL("+item.Image+")"}} href={document.location.origin+"/Applications/"+item.Name}>
 									<div className="Info">
 										<div className="Name">{item.Name}</div>
 										<hr/>
