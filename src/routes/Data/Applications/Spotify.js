@@ -53,8 +53,8 @@ class SpotifyApp extends Component {
 	}
 
 	componentDidMount() {
-		if(queryString.parse(window.location).includes("localhost"))backendURL = "http://localhost:8888/"
-		else if (queryString.parse(window.location).includes("heroku")) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
+		if(window.location.href.includes("localhost"))backendURL = "http://localhost:8888/"
+		else if (window.location.href.includes("heroku")) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
 		redirect_uri = document.location.origin + 'Applications/Spotify/'
 
 		if ( queryString.parse( window.location.search )
@@ -66,7 +66,7 @@ class SpotifyApp extends Component {
 							"code": queryString.parse( window.location.search )
 								.code,
 							"grant_type": 'authorization_code',
-							"redirect_uri": backendURL+"Applications/Spotify/"
+							"redirect_uri": redirect_uri
 						} ),
 						headers: { 'Content-Type': 'application/json' },
 						mode: 'cors'
