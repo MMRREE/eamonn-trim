@@ -55,7 +55,7 @@ class SpotifyApp extends Component {
 	componentDidMount() {
 		if(window.location.href.includes("localhost"))backendURL = "http://localhost:8888/"
 		else if (window.location.href.includes("heroku")) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
-		redirect_uri = document.location.origin + 'Applications/Spotify/'
+		redirect_uri = document.location.origin + '/Applications/Spotify/'
 		console.log(redirect_uri)
 
 		if ( queryString.parse( window.location.search )
