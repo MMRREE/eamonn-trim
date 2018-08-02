@@ -64,7 +64,7 @@ class SpotifyApp extends Component {
 							"code": queryString.parse( window.location.search )
 								.code,
 							"grant_type": 'authorization_code',
-							"redirect_uri": redirect_uri
+							"redirect_uri": encodeURIComponent(redirect_uri)
 						} ),
 						headers: { 'Content-Type': 'application/json' },
 						mode: 'cors'
