@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import queryString from 'query-string'
 import Layout from './Data/Designs/Components/Layout.js'
 
 
@@ -10,7 +9,7 @@ let backendURL = ""
 
 class Contact extends Component {
 	postComment() {
-		return fetch( bakendURL+'contact/comments', {
+		return fetch( backendURL+'contact/comments', {
 				method: "POST",
 				body: JSON.stringify( {
 					"Comment": {
@@ -26,10 +25,11 @@ class Contact extends Component {
 	}
 
 	componentDidMount() {
-		if(queryString.parse(window.location).includes("localhost"))backendURL = "http://localhost:8888/"
-		else if (queryString.parse(window.location).includes("heroku")) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
-		console.log(bakendURL)
-		fetch( bakendURL+'contact/comments', {
+		console.log(window.location.href)
+		if(window.location.href.includes("localhost"))backendURL = "http://localhost:8888/"
+		else if (window.location.href.includes("heroku")) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
+		console.log(backendURL)
+		fetch( backendURL+'contact/comments', {
 				method: "GET",
 				headers: { 'content-type': 'application/json' },
 				mode: "cors"
