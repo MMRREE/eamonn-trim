@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Layout from './Data/Designs/Components/Layout.js'
+import './Stylesheets/Home.css'
 
 
 class Home extends Component {

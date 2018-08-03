@@ -1,0 +1,49 @@
+/* Home Page Styles */
+
+.Home > .MainLinks{
+	position:absolute;
+	display:grid;
+	grid-row: 100%;
+	grid-column: 50% 50%;
+	grid-template: "about mostRecent";
+	top:62vh;
+	left:50vw;
+	font-size: 11vmin;
+	width:13ch;
+	height:1.1em;
+	transform: translate(-50%, -50%);
+	text-decoration: none;
+	color:white;
+	text-shadow:
+  -1px -1px 0 #000,
+	1px -1px 0 #000,
+  -1px 1px 0 #000,
+	1px 1px 0 #000;
+}
+
+.Home > .MainLinks > a{
+	position:relative;
+	color:white;
+	font-size: 2.75vmin;
+	left:12.5%;
+	text-shadow:
+  -1px -1px 0 #000,
+	1px -1px 0 #000,
+  -1px 1px 0 #000,
+	1px 1px 0 #000;
+	width:20ch;
+	box-sizing: border-box;
+	padding:0.65em;
+	height:3em;
+	text-align:center;
+	border:white;
+	border-style: solid;
+	border-width: 7.5px;
+	text-decoration: none;
+}
+
+.Home > .MainLinks > a:hover{
+	background: rgba(255, 255, 255, 0.25);
+}
+
+/* --- Home Page Styles --- */

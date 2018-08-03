@@ -1,0 +1,102 @@
+/* Contact Page Styles */
+
+.Contact > .DisplayCommentBox{
+	position: absolute;
+	top:20vh;
+	right:10vw;
+	width:50vw;
+	font-size: 5.5vmin;
+	height: 70vh;
+	overflow: hidden;
+	background: rgba(10, 10, 10, 0.4);
+}
+
+.Contact > .DisplayCommentBox > .DisplayBoxScroll{
+	height: 92%;
+	width: 100%;
+	overflow:auto;
+	padding-right: 20px;
+}
+
+.Contact > .DisplayCommentBox > div > div > .Author{
+	font-size: 32px;
+	top:0;
+}
+
+.Contact > .DisplayCommentBox > div > div > .Comment{
+	top:0;
+	font-size: 16px;
+	margin-bottom: 10px;
+}
+
+.Contact > .ContactMethods{
+	position: absolute;
+	top:20vh;
+	left:10vw;
+	background: rgba(10, 10, 10, 0.4);
+}
+
+.Contact > .ContactMethods > .Link{
+	color:white;
+	text-decoration:none;
+	position: relative;
+	float:left;
+	width:100%;
+	box-sizing:border-box;
+	text-align: center;
+	padding:10px;
+	border:white;
+	border-style: solid;
+	border-width: 7.5px
+}
+
+.Contact > .ContactMethods > .Link:hover{
+	background: rgba(255, 255, 255, 0.25);
+}
+
+.Contact > .ContactMethods > .WriteCommentBox{
+	display:grid;
+	grid-template-areas:
+	"hr hr"
+	"AuthorTag AuthorInput"
+	"CommentTag CommentInput"
+	"Nada Submit"
+	"Nada Reset";
+	grid-template-columns: auto 1fr;
+}
+
+.Contact > .ContactMethods > .WriteCommentBox > div{
+	padding:3px;
+	margin:15px 0;
+	text-align: right;
+}
+
+.Contact > .ContactMethods > .WriteCommentBox > .Input{
+	background:none;
+	border:white;
+	color:white;
+	border-width:7.5px;
+	box-sizing: border-box;
+	resize: none;
+	border-style:solid;
+	margin: 10px 0;
+	padding: 3px;
+}
+
+.Contact > .ContactMethods > .WriteCommentBox > .Input:hover{
+	background: rgba(255, 255, 255, 0.25);
+}
+
+.Contact > .ContactMethods > .WriteCommentBox > .InputText:focus{
+	background: rgba(255, 255, 255, 0.25);
+}
+
+.Contact > .ContactMethods > .WriteCommentBox > .InputComment{
+	font-size: 0.9rem;
+	font-family: Montserrat, Charcoal, sans-serif;
+	height:12em;
+	text-align:left;
+	resize:none;
+}
+
+/* --- Contact Page Styles --- */

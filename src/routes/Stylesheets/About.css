@@ -1,0 +1,40 @@
+/* About Page Styles */
+
+.About > .AboutWebsiteBox{
+	position: absolute;
+	top: 50%;
+	right:15%;
+	margin: -267px 0 0 0;
+	font-size: 16px;
+	width:55ch;
+	background: rgba(10, 10, 10, 0.4);
+}
+
+.About > .AboutAuthorBox{
+	position: absolute;
+	top: 50%;
+	left:15%;
+	margin: -267px 0 0 0;
+	font-size: 16px;
+	width:55ch;
+	background: rgba(10, 10, 10, 0.4);
+}
+
+.About > div > .Link{
+	position:absolute;
+	color:white;
+	width:100%;
+	box-sizing: border-box;
+	padding:4px;
+	text-decoration: none;
+	border:white;
+	border-style:solid;
+	text-align: center;
+	font-size:16px;
+}
+
+.About > div > .Link:hover{
+	background:rgba(255,255,255,0.25)
+}
+
+/* --- About Page Styles --- */

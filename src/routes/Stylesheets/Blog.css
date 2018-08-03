@@ -1,0 +1,11 @@
+.Blog > .AppBox {
+	position: absolute;
+	top: 50vh;
+	left:5vw;
+	height:75vh;
+	margin: -267px 0 0 0;
+	width:90vw;
+	background: rgba(10, 10, 10, 0.4);
+	font-size:5.5vmin;
+	overflow:hidden;
+}

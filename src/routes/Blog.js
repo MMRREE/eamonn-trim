@@ -1,17 +1,18 @@
 import React, { Component } from 'react'
 import Data from './Data/Data.json'
 import Layout from './Data/Designs/Components/Layout.js'
-import './Stylesheets/Applications.css'
+import './Stylesheets/Blog.css'
 
-class Applications extends Component {
+
+class Blog extends Component {
 	render() {
 		return (
-			<div className="Applications">
+			<div className="Blog">
 
 				<Layout/>
 
 				<div className="AppBox">
-					Applications
+					Posts
 					<hr style={{width:"100%"}}/>
 					<div className="ScrollBox">
 						{Data ? Data.Applications.map((item)=>{
@@ -34,4 +35,4 @@ class Applications extends Component {
 }
 
 
-export default Applications;
+export default Blog;
