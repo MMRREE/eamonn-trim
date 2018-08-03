@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Spotify API function to callback and authenticate with the server
 - Backend API transactions
 - Spotify auto update token when it is close to running out of authentication
+- Support for pushing directly to Heroku and having it work correctly
 
 ### Changed
 - Spotify UI aligned like the rest of the website
