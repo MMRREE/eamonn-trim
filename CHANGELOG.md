@@ -5,9 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Versions
-- [1.0.0 - 2018-07-19](#1.0.0---2018-07-19)
+- [Unreleased](#Unreleased)
+- [1.1.0 - 2018-07-23](#V1.1.0)
+- [1.0.0 - 2018-07-19](#V1.0.0)
 
-## Unreleased 2.0.0
+## Unreleased
+2.0.0 - ????-??-??
 ### Added
 - Spotify API function to callback and authenticate with the server
 - Backend API transactions
@@ -19,7 +22,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Spotify app Playlist indexing and grid-area restructure
 - Backend API calls instead of directly to Spotify (helps agaisnt CORS calls and better authentication flow)
 
-## 1.1.0 - 2018-07-23
+## V1.1.0
+1.1.0 - 2018-07-23
 ### Added
 - index.css holding the styles for every page based on a defined class naming system
 - Contact page
@@ -57,7 +61,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Contact page comment box local storage fetching and saving
 
-## 1.0.0
+## V1.0.0
 1.0.0 - 2018-07-19
 ### Added
 - This CHANGELOG file
