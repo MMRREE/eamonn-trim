@@ -4,6 +4,7 @@
   "description": "Eamonn's First Developmental Website",
   "main": "index.js",
   "dependencies": {
+    "p5": "^0.6.1",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-p5-wrapper": "0.0.4",

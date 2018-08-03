@@ -11,6 +11,9 @@
 		},
 		{
 			"Name":"Designs"
+		},
+		{
+			"Name":"Blog"
 		}
 	],
 	"Applications":[
@@ -51,6 +54,14 @@
 			"Date":"15/06/2018",
 			"Description":"A pseudo 3D image of a starfield. Emulates flying through space at high speeds.",
 			"Image":"/Images/Designs/Starfield.png"
+		}
+	],
+	"Blogs":[
+		{
+			"Name":"WIP",
+			"Date":"03/08/2018",
+			"Paragraphs":["abc","def"],
+			"Image":null
 		}
 	]
 }

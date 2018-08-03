@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Data from './Data/Data.json'
-import Layout from './Data/Designs/Components/Layout.js'
+import Layout from './Data/Applications/Components/Layout.js'
 import './Stylesheets/Applications.css'
 
 class Applications extends Component {

@@ -9,3 +9,59 @@
 	font-size:5.5vmin;
 	overflow:hidden;
 }
+
+.Blog > .AppBox > .ScrollBox{
+	font-size:16px;
+	height:85%;
+	width:100%;
+	display:grid;
+	grid-gap:0.5vw;
+	grid-template-columns:88vw ;
+	grid-template-rows:15vw 15vw 15vw 15vw;
+	overflow:auto;
+	padding-right: 20px;
+}
+
+.Blog > .AppBox > .ScrollBox > .Link{
+	width:100%;
+	height:100%;
+	background-size:cover;
+	text-decoration:none;
+	overflow:hidden;
+}
+
+.Blog > .AppBox > .ScrollBox > a > .Info{
+	width:100%;
+	height:100%;
+	opacity:1;
+	background: rgba(10, 10, 10, 0.8);
+}
+
+.Blog > .AppBox > .ScrollBox > a:hover > .Info{
+	background:rgba(50, 50, 50, 0.8);
+	opacity:1;
+}
+
+.Blog > .AppBox > .ScrollBox > a > .Info > div{
+	color: white;
+}
+
+.Blog > .AppBox > .ScrollBox > a > .Info > .Name{
+	font-size: 3.5vmin;
+}
+
+.Blog > .AppBox > .ScrollBox > a > .Info > .Date{
+	font-size: 3vmin;
+}
+
+.Blog > .AppBox > .ScrollBox > a > .Info > .Description{
+	overflow:auto;
+	height:99%;
+	width: 100%;
+	padding-right:20px;
+	font-size: 2.5vmin;
+}
+
+.Blogpost > .Post{
+	width:60ch;
+}

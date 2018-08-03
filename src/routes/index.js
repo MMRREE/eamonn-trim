@@ -5,6 +5,7 @@ import {
 	Route,
 	Switch
 } from 'react-router-dom'
+import P5Wrapper from 'react-p5-wrapper'
 
 //Custom routing using the datastores
 import Data from './Data/Data.json'
@@ -12,6 +13,9 @@ import Data from './Data/Data.json'
 //Routings for the pages with special properties
 import Home from './Home'
 import NotFound from './NotFound'
+
+//Required layout item to be able to render in this dom element
+import Layout from './Data/Applications/Components/Layout.js'
 
 class Routes extends Component{
 	findGreatest(dates){
@@ -52,12 +56,13 @@ class Routes extends Component{
 			})
 
 			let ComponentsLocal = {}
+			let SketchesLocal = {}
 			Data.Applications.forEach(item=>{
 				ComponentsLocal[item.Name] = require('./Data/Applications/'+item.Name+'.js').default
 			})
 
 			Data.Designs.forEach(item=>{
-				ComponentsLocal[item.Name] = require('./Data/Designs/'+item.Name+'.js').default
+				SketchesLocal[item.Name] = require('./Data/Designs/'+item.Name+'.js').default
 			})
 
 			Data.Pages.forEach(item=>{
@@ -66,7 +71,8 @@ class Routes extends Component{
 
 			this.setState({
 				MostRecent:ComponentsInfo[greatestIndex],
-				Components:ComponentsLocal
+				Components:ComponentsLocal,
+				Sketches:SketchesLocal
 			})
 		}
 	}
@@ -107,12 +113,42 @@ class Routes extends Component{
 					  	{Data
 							? Data.Designs.map(item=>{
 						  	return(
-							  	<Route key={Data.Designs.indexOf(item)} exact path={"/Designs/"+item.Name} component={this.state
-									? this.state.Components[item.Name]
-									: NotFound}/>
+							  	<Route key={Data.Designs.indexOf(item)} exact path={"/Designs/"+item.Name} render={()=>
+									<div className={item.Name}>
+
+										<Layout/>
+										<div className="Sketch" style={{position:"absolute", left:"12.5vw", top:"10vh", zIndex:"1", fontSize:"2.25vh", background:"rgba(10,10,10,0.25)"}}>
+											{item.Name}
+											<hr/>
+											{this.state ? <P5Wrapper sketch={this.state.Sketches[item.Name]}/> : ""
+										}
+										</div>
+
+									</div>
+								}/>
 						  	)
 					  	})
 					  	: ""}
+
+						{Data
+							? Data.Blogs.map(item=>{
+								return(
+									<Route key={Data.Blogs.indexOf(item)} exact path={"/Blog/"+item.Name} render={()=>
+										<div className={"Blogpost "+item.Name}>
+
+											<Layout/>
+											<div className="Post" style={{position:"absolute", left:"12.5vw", top:"10vh", zIndex:"1", fontSize:"2.25vh", background:"rgba(10,10,10,0.25)"}}>
+												{item.Name}
+												<hr/>
+												{item.Paragraphs.map(para=>{
+													return(<p key={item.Paragraphs.indexOf(para)}>{para}</p>)
+												})}
+											</div>
+
+										</div>
+									}/>
+								)
+							}) : ""}
 
 					  	{/*Most recent path from Data*/}
 					  	{this.state
