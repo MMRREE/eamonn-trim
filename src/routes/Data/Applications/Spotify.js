@@ -11,6 +11,7 @@ import NavBar from './Components/NavBar.js'
 let client_id = '5a9c856a23c24627a23d5a0c06b4aec7'
 let redirect_uri = ""
 let scopes = 'user-library-read user-library-modify playlist-read-private playlist-modify-public playlist-modify-private playlist-read-collaborative user-read-recently-played user-top-read user-read-private user-read-email user-read-birthdate streaming user-modify-playback-state user-read-currently-playing user-read-playback-state user-follow-modify user-follow-read app-remote-control'
+let backendURL = ""
 
 class SpotifyApp extends Component {
 	constructor() {
@@ -52,13 +53,16 @@ class SpotifyApp extends Component {
 	}
 
 	componentDidMount() {
+		if ( window.location.href.includes( "localhost" ) ) backendURL = "http://localhost:8888/"
+		else if ( window.location.href.includes( "heroku" ) ) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
+		console.log( backendURL )
 		redirect_uri = document.location.origin + '/Applications/Spotify/'
-		console.log(redirect_uri)
+		console.log( redirect_uri )
 
 		if ( queryString.parse( window.location.search )
 			.code ) {
 			fetch(
-					document.location.origin+"/spotify/token", {
+					backendURL + "/spotify/token", {
 						method: "POST",
 						body: JSON.stringify( {
 							"code": queryString.parse( window.location.search )
@@ -94,7 +98,7 @@ class SpotifyApp extends Component {
 		if ( this.state.localTime >= 3600 ) {
 
 			fetch(
-					document.location.origin+'/spotify/token', {
+					backendURL + '/spotify/token', {
 						method: "POST",
 						body: JSON.stringify( {
 							"grant_type": "refresh_token",
@@ -121,7 +125,7 @@ class SpotifyApp extends Component {
 
 	setUpState( accessToken = null, refreshToken = null ) {
 		if ( accessToken ) {
-			fetch( document.location.origin+'/spotify/playlistData', {
+			fetch( backendURL + '/spotify/playlistData', {
 					method: "POST",
 					headers: { 'content-type': 'application/json' },
 					mode: 'cors',

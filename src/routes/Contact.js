@@ -9,7 +9,7 @@ let backendURL = ""
 
 class Contact extends Component {
 	postComment() {
-		return fetch( backendURL+'contact/comments', {
+		return fetch( backendURL + 'contact/comments', {
 				method: "POST",
 				body: JSON.stringify( {
 					"Comment": {
@@ -25,11 +25,11 @@ class Contact extends Component {
 	}
 
 	componentDidMount() {
-		console.log(window.location.href)
-		if(window.location.href.includes("localhost"))backendURL = "http://localhost:8888/"
-		else if (window.location.href.includes("heroku")) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
-		console.log(backendURL)
-		fetch( backendURL+'contact/comments', {
+		console.log( window.location.href )
+		if ( window.location.href.includes( "localhost" ) ) backendURL = "http://localhost:8888/"
+		else if ( window.location.href.includes( "heroku" ) ) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
+		console.log( backendURL )
+		fetch( backendURL + 'contact/comments', {
 				method: "GET",
 				headers: { 'content-type': 'application/json' },
 				mode: "cors"
