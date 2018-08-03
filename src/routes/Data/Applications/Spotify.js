@@ -62,7 +62,7 @@ class SpotifyApp extends Component {
 		if ( queryString.parse( window.location.search )
 			.code ) {
 			fetch(
-					backendURL + "/spotify/token", {
+					backendURL + "spotify/token", {
 						method: "POST",
 						body: JSON.stringify( {
 							"code": queryString.parse( window.location.search )
@@ -98,7 +98,7 @@ class SpotifyApp extends Component {
 		if ( this.state.localTime >= 3600 ) {
 
 			fetch(
-					backendURL + '/spotify/token', {
+					backendURL + 'spotify/token', {
 						method: "POST",
 						body: JSON.stringify( {
 							"grant_type": "refresh_token",
@@ -125,7 +125,7 @@ class SpotifyApp extends Component {
 
 	setUpState( accessToken = null, refreshToken = null ) {
 		if ( accessToken ) {
-			fetch( backendURL + '/spotify/playlistData', {
+			fetch( backendURL + 'spotify/playlistData', {
 					method: "POST",
 					headers: { 'content-type': 'application/json' },
 					mode: 'cors',
