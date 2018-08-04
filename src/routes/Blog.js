@@ -20,9 +20,10 @@ class Blog extends Component {
 							return(
 								<a key={Data.Blogs.indexOf(item)} className="Link" style={{backgroundImage:"URL("+item.Image+")"}} href={document.location.origin+"/Blog/"+item.Name}>
 									<div className="Info">
-										<div className="Name">{item.Name}</div>
+										<div className="Date">{item.Date + " - By " + item.Author}</div>
 										<hr/>
-										<div className="Date">{item.Date}</div>
+										<div className="Name">{item.Name}</div>
+										<br/>
 										<div className="Description">{item.Paragraphs[0]}</div>
 									</div>
 								</a>)
