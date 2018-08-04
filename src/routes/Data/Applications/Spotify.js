@@ -1,12 +1,17 @@
+// NPM stuff
 import React, { Component } from 'react'
 import queryString from 'query-string'
-import './Spotify.css'
+
+// App required js
 import { SpotifyPlayer } from './Spotify/SpotifyPlayer.js'
 import PlaylistDisplay from './Spotify/PlaylistDisplay.js'
 import Filter from './Spotify/Filter.js'
 import HourCounter from './Spotify/HourCounter.js'
 import PlaylistCounter from './Spotify/PlaylistCounter.js'
 import NavBar from './Components/NavBar.js'
+
+// Stylesheet
+import './Spotify.css'
 
 let client_id = '5a9c856a23c24627a23d5a0c06b4aec7'
 let redirect_uri = ""

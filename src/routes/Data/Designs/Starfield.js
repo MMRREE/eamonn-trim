@@ -1,26 +1,65 @@
-import React, { Component } from 'react'
-import Layout from './Components/Layout.js'
-import P5Wrapper from 'react-p5-wrapper'
+export default function sketch (p){
 
-import sketch from './StarfieldSketch.js'
+	let speed;
 
-class Starfield extends Component {
-	render() {
-		return (
-			<div className="Starfield">
+	class Star {
+	  	constructor() {
+	    	this.x = p.random(-p.width, p.width);
+	    	this.y = p.random(-p.height, p.height);
+	    	this.z = p.random(p.width);
+	    	this.pz = this.z;
+	  	}
 
-				<Layout/>
+	 	update = function() {
+	    	this.z = this.z - speed;
+	    	if (this.z < 1) {
+	      	this.z = p.width;
+	      	this.x = p.random(-p.width, p.width);
+	      	this.y = p.random(-p.height, p.height);
+	      	this.pz = this.z;
+	    	}
+	  	}
 
-				<div className="Sketch" style={{position:"absolute", left:"12.5vw", top:"10vh", zIndex:"1", fontSize:"2.25vh", background:"rgba(10,10,10,0.25)"}}>
-					Starfield
-					<hr/>
-					<P5Wrapper sketch={sketch}/>
-				</div>
+	 	show = function() {
+	    	p.fill(255);
+	    	p.noStroke();
 
-			</div>
-		)
+	    	let sx = p.map(this.x / this.z, 0, 1, 0, p.width);
+	    	let sy = p.map(this.y / this.z, 0, 1, 0, p.height);
+
+		   let r = p.map(this.z, 0, p.width, 16, 0);
+
+		   p.ellipse(sx, sy, r/3, r/3);
+
+	    	let px = p.map(this.x / this.pz, 0, 1, 0, p.width);
+	    	let py = p.map(this.y / this.pz, 0, 1, 0, p.height);
+
+	    	p.stroke(255);
+	    	p.line(px, py, sx, sy);
+	  	}
 	}
+
+	let stars = [];
+
+	p.setup = function() {
+	  	p.createCanvas(p.windowWidth*0.75, p.windowHeight*0.75);
+	  	for (let i = 0; i < 100; i++) {
+	    	stars[i] = new Star();
+	  	}
+	}
+
+	p.windowResized = function(){
+		p.resizeCanvas(p.windowWidth*0.75, p.windowHeight*0.75)
+	}
+
+	p.draw = function() {
+	  	speed = 125;
+	  	p.background(0);
+	  	p.translate(p.width/2, p.height/2);
+	  	for (let i = 0; i < stars.length; i++) {
+	    	stars[i].update();
+	    	stars[i].show();
+	  	}
+	}
+
 }
-
-
-export default Starfield;

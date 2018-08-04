@@ -1,26 +1,34 @@
-import React, { Component } from 'react'
-import Layout from './Components/Layout.js'
-import P5Wrapper from 'react-p5-wrapper'
+export default function sketch (p){
+	let angle = p.PI/4;
 
-import sketch from './FactorialSketch.js'
-
-class Factorial extends Component {
-	render() {
-		return (
-			<div className="Factorial">
-
-				<Layout/>
-
-				<div className="Sketch" style={{position:"absolute", left:"12.5vw", top:"10vh", zIndex:"1", fontSize:"2.25vh", background:"rgba(10,10,10,0.25)"}}>
-					Factorial
-					<hr/>
-					<P5Wrapper sketch={sketch}/>
-				</div>
-
-			</div>
-		)
+	p.setup = function() {
+	  	p.createCanvas(p.windowWidth*0.75, p.windowHeight*0.75);
 	}
+
+	p.windowResized = function(){
+		p.resizeCanvas(p.windowWidth*0.75, p.windowHeight*0.75)
+	}
+
+	p.branch = function(len) {
+	  	p.line(0, 0, 0, -len);
+	  	p.translate(0, -len);
+	  	if (len > 2) {
+	    	p.push();
+	    	p.rotate(angle);
+	    	p.branch(len*0.66);
+	    	p.pop();
+	    	p.push();
+	    	p.rotate(-angle);
+	    	p.branch(len*0.66);
+	    	p.pop();
+	  	}
+	}
+
+	p.draw = function() {
+	  	p.background(51);
+	  	p.stroke(255);
+	  	p.translate(p.width/2, p.height);
+	  	p.branch(p.height/4);
+	}
+
 }
-
-
-export default Factorial;

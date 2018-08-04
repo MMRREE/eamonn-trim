@@ -11,6 +11,9 @@
 		},
 		{
 			"Name":"Designs"
+		},
+		{
+			"Name":"Blog"
 		}
 	],
 	"Applications":[
@@ -51,6 +54,37 @@
 			"Date":"15/06/2018",
 			"Description":"A pseudo 3D image of a starfield. Emulates flying through space at high speeds.",
 			"Image":"/Images/Designs/Starfield.png"
+		}
+	],
+	"Blogs":[
+		{
+			"Name":"Building this website: Line by Line",
+			"Date":"03/08/2018",
+			"Author":"Eamonn Trim",
+			"Paragraphs":[
+				"Having been through my first year of Electrical and Electronic Engineering I have become more knowledgable about coding and other elements of technology than I was previously. Even though this has been very fulfilling I have wanted to explore how far I could go with the concepts I'd learnt. Turns out not as far as I would like. It is because of this that I started to code in different languages and for different small projects. Once I had a small collection of these I decided I wanted a way to be able to share them. This is the lesson I learnt from building this website.",
+
+				"Now before most of you readers turn away now saying 'I can't be bothered to read this, I know nothing about code!' I would like to first mention that I will not be going into anything too technical, this will be more about my approach and how I think the process of building this website has taught me that can be applied to other areas of my life. Most importantly how it taught me that just because the final goal of a project might look far out of reach from where you are, it doesn't mean that you won't reach it.",
+
+				"I'm sure you've all been there, getting to a point in your life where you feel unahppy and so think, 'I am need to start working out, eating healthy, being productive, being more social, more reflect, more this, more that, more ...' with your list sprawling and getting long with every shortcoming you see in yourself. I did this exact thing when planning this website. 'I need it to be modern looking, have good data management, have interactive features, be easy for a client to use, this, that...' and before long I was in the same position as you thinking, 'God, with such a long list, how am I ever going to get through it all'.",
+
+				"Now by no means am I comparing overhauling yourself as a person in order to become a 'perfect' human being (if there is such a thing), but building this webiste certaintly looked daunting because I had never coded in Hyper Text Markup Language (HTML), JavaScript (JS), or Cascading Style Sheets(CSS) before. To begin with I decided to start simple. I began to build a single page, experimenting with different ways of laying it out. Each iteration I seemed to dislike a little less, with my knowledge slowly building. The importance of this was as I was working I didn't think about the long list of goals that I had at the end, I broke it up into smaller pieces that I managed bit by bit.",
+
+				"I had found that with a vague idea of what my final website would feel like and something that I was generally aiming for gave me great direction, but I also realised that this wasn't going to happen on the first day I started coding. I taught myself a bit of this, a bit of that. Slowly building my abilities and my confidence in how I could handle the situation. I was not scared of shortcoming because each time I failed to achieve my overall goal, I took a small step closer to it. Too many times have I taken one, two steps towards a goal I have set myself and decided I can't be bothered to take the further hundreds or thousands that I required to reach the level of proficiency I want. Looking ahead scares and prevents me.",
+
+				"The message that I am trying to get across, if it's not evident, is that small steps, looking only at the current issue at hand, helped me slowly head towards a finished product that you can see here today. I have since taken this mentality to heart and have decided to spread it to other areas of my life where I feel I can improve. I think not about the big goal at the end of the project, but instead about the sum of parts when it's down. This helps me not get overwhelmend and discouraged by how far left I have to go. As well as this, I tend to find reaching halfway allows me to look at the overall goal and get even more motivation. My thought pattern follows the idea of 'Well, I'm halfway there, it's only twice what I have already done to finish' (a sort of, well you basically already taken the steps to finish it just do that again).",
+
+				"Why should you care about my aspiration to push towards my project to finish this website. Well it's as simple as, if I can do it, you certainly can. I am just the average everyday person, but when it comes to average and everyday, small efforts build. Sometimes you may not feel like doing it, sometimes something that was enjoyable just seems to be boring at the moment, but do 10 minutes of it, 20 minutes of it a day and slowly but surely your skills and confidence will grow. As the skill grows, I have found that a new perspective is shone on the activity and there seems to be areas you enjoy you would have never considered before. Don't listen to those who are more experienced at the skill who might laugh at you and ridicule you, they have long since lost the humility that learning a new skill takes and I garauntee they were in your position not too long ago (either with what you are doing, or another skill entirely).",
+
+				"This has become an incoherent babel of my thoughts all stringed into one long blog, and for that I am sorry, if there is one thing which you should take away from this is that you should do whatever skill you want to build a little everyday. 10 minutes here, 10 minutes there, and soon, before you know it, you will have reached the level above and beyond many people in today's world, and that will reap great benefits for yourself and those around you."
+			],
+			"Sources":[
+				{
+					"Name":"Header Image",
+					"Link":"https://pixabay.com/en/computer-computer-code-screen-1209641/"
+				}
+			],
+			"Image":"/Images/Blogs/BuildingThisWebsite.jpg"
 		}
 	]
 }

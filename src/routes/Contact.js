@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import Layout from './Data/Designs/Components/Layout.js'
+import Layout from './Data/Applications/Components/Layout.js'
+import './Stylesheets/Contact.css'
 
 
 let inputAuthor = ""

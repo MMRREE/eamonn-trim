@@ -1,0 +1,115 @@
+.Blog > .AppBox {
+	position: absolute;
+	top: 50vh;
+	left:5vw;
+	height:75vh;
+	margin: -267px 0 0 0;
+	width:90vw;
+	background: rgba(10, 10, 10, 0.4);
+	font-size:5.5vmin;
+	overflow:hidden;
+}
+
+.Blog > .AppBox > .ScrollBox{
+	font-size:16px;
+	height:85%;
+	width:100%;
+	display:grid;
+	grid-gap:0.5vw;
+	grid-template-columns:88vw ;
+	grid-template-rows:15vw 15vw 15vw 15vw;
+	overflow:auto;
+	padding-right: 20px;
+}
+
+.Blog > .AppBox > .ScrollBox > .Link{
+	width:100%;
+	height:100%;
+	background-size:contain;
+	text-decoration:none;
+	overflow:hidden;
+}
+
+.Blog > .AppBox > .ScrollBox > a > .Info{
+	width:100%;
+	height:100%;
+	opacity:1;
+	background: rgba(10, 10, 10, 0.8);
+}
+
+.Blog > .AppBox > .ScrollBox > a:hover > .Info{
+	background:rgba(50, 50, 50, 0.8);
+	opacity:1;
+}
+
+.Blog > .AppBox > .ScrollBox > a > .Info > div{
+	color: white;
+}
+
+.Blog > .AppBox > .ScrollBox > a > .Info > .Name{
+	font-style: italic;
+	font-size: 4.5vmin;
+}
+
+.Blog > .AppBox > .ScrollBox > a > .Info > .Date{
+	font-size: 1.75vmin;
+}
+
+.Blog > .AppBox > .ScrollBox > a > .Info > .Description{
+	overflow:auto;
+	height:99%;
+	width: 100%;
+	padding-right:20px;
+	font-size: 2.5vmin;
+}
+
+/* Blog Post Styles */
+
+.Blogpost > .Post{
+	position: absolute;
+	display:grid;
+	top:50px;
+	font-size: 2.2vmin;
+	width: 62ch;
+	left:50vw;
+	transform: translate(-50%, 0%);
+	height:95vh;
+	justify-content: center;
+	overflow:hidden;
+}
+
+.Blogpost > .Post > .ScrollBox{
+	width:60ch;
+	z-index:1;
+	position: relative;
+	left:25px;
+	padding:1rem 50px 1rem 1rem;
+	background:rgba(10,10,10,0.6);
+	overflow: auto;
+	height:99%;
+}
+
+
+.Blogpost > .Post > .ScrollBox > .Image{
+	position: relative;
+	top: 0;
+	width:100%;
+}
+
+.Blogpost > .Post > .ScrollBox > .Name{
+	position: sticky;
+	z-index: 2;
+	top: -1rem;
+	font-size: 2.5vmin;
+	padding-bottom: 5px;
+	background:rgba(10,10,10, 0.8);
+}
+
+.Blogpost > .Post > .ScrollBox > div > a{
+	text-decoration: none;
+	color: white;
+}
+
+.Blogpost > .Post > .ScrollBox > .Spacing{
+	height:2.5em;
+}
