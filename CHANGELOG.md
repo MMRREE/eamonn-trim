@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 # Versions
+
+## Unreleased
+2.1.0 - 2018-08-XX
+### Added
+- Spotify Automatically re-logs in for the code if there is already a code inputted into url bar (assuming user has already logged in prior) to automatically retrieve correct code
+- Spotify finds the last played song, and automatically loads it into the player and pauses the player so that the user can start from where they left off
+
+
 ## V2.0.0
 2.0.0 - 2018-08-03
 ### Added

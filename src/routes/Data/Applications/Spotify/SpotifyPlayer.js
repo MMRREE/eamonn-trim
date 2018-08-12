@@ -9,6 +9,7 @@ let GlobalPlayer = {
 	Shuffle: false,
 	RepeatContext: "Off",
 	NextRepeatContext: "Context",
+	PlaybackError: 0,
 	Song: {
 		Name: 'Roses',
 		Artists: 'wüsh',
@@ -19,6 +20,9 @@ let GlobalPlayer = {
 		Uri: 'spotify:track:3rDtYwyfZNfTfxjyivntg5'
 	}
 }
+let backendURL = ""
+
+let startCount = 0;
 
 function SpotifyPlayerStartMusic( uri, context_uri, accessToken ) {
 	fetch( 'https://api.spotify.com/v1/me/player/play?device_id=' + GlobalPlayer.DeviceId, {
@@ -33,6 +37,7 @@ function SpotifyPlayerStartMusic( uri, context_uri, accessToken ) {
 			},
 		} )
 		.then( response => {
+			GlobalPlayer.Render = true
 			GlobalPlayer.IsPlaying = true
 		} )
 }
@@ -66,11 +71,9 @@ class SpotifyPlayer extends Component {
 			player.addListener( 'account_error', ( { message } ) => { console.error( message ); } );
 			player.addListener( 'playback_error', ( { message } ) => { console.error( message ); } );
 
-			// Playback status updates
+			// Playback status updates the local data
 			player.addListener( 'player_state_changed', state => {
-				console.log( "external player state changed to", state );
 				if ( state !== null ) {
-
 					GlobalPlayer.Song.Name = state.track_window.current_track.name
 					GlobalPlayer.Song.Duration = state.duration
 					GlobalPlayer.Song.Artists = state.track_window.current_track.artists[ 0 ].name
@@ -90,29 +93,72 @@ class SpotifyPlayer extends Component {
 						GlobalPlayer.NextRepeatContext = "Off"
 					}
 
-					console.log( GlobalPlayer )
+					console.log( "state update:", GlobalPlayer )
 					this.props.playerObjectUpdate( GlobalPlayer );
 					this.forceUpdate();
 				}
 			} );
 
-			// Ready
+			// Ready, get recently played and then start to play based on this song and context
 			player.addListener( 'ready', ( { device_id } ) => {
-				console.log( 'Ready with Device ID', device_id );
+				if ( window.location.href.includes( "localhost" ) ) backendURL = "http://localhost:8888/"
+				else if ( window.location.href.includes( "heroku" ) ) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
+				else backendURL = "http://" + window.location.hostname + ":8888/"
 				GlobalPlayer.DeviceId = device_id
-				GlobalPlayer.Render = true
-				console.log( "Gp", GlobalPlayer )
-				console.log( GlobalPlayer )
-				this.props.playerObjectUpdate( GlobalPlayer );
-				this.forceUpdate();
+				fetch( backendURL + "spotify/recentlyPlayed", {
+						method: "POST",
+						headers: { 'content-type': 'application/json' },
+						mode: 'cors',
+						body: JSON.stringify( { "access_token": token } )
+					} )
+					.then( response => response.json() )
+					.then( rp => {
+						if ( rp ) {
+							fetch( rp.Song.Context, {
+									method: "GET",
+									headers: {
+										'Content-Type': 'application/json',
+										'Authorization': 'Bearer ' + token
+									}
+								} )
+								.then( response => response.json() )
+								.then( ret => {
+									fetch( 'https://api.spotify.com/v1/me/player/play?device_id=' + GlobalPlayer.DeviceId, {
+											method: 'PUT',
+											body: JSON.stringify( {
+												"context_uri": ret.uri,
+												"offset": { "uri": rp.Song.Uri }
+											} ),
+											headers: {
+												'Content-Type': 'application/json',
+												'Authorization': 'Bearer ' + token
+											},
+										} )
+										.then( response => {
+											if ( response.status === 204 ) {
+												GlobalPlayer.Render = true
+												GlobalPlayer.FirstStart = true
+											}
+											return response.json()
+										} )
+										.then( info => {
+											if ( info.error.message === "Non supported context uri" ) {
+												GlobalPlayer.PlaybackError = 1
+											}
+										} )
+								} )
+							this.props.playerObjectUpdate( GlobalPlayer );
+							this.forceUpdate();
+						}
+					} )
 			} );
 
 			// Not Ready
 			player.addListener( 'not_ready', ( { device_id } ) => {
-				console.log( 'Device ID has gone offline', device_id );
+				console.error( 'Device ID has gone offline', device_id );
 			} );
 
-			// event errors to listen for
+			// Event errors to listen for
 			player.on( 'initialization_error', ( { message } ) => {
 				console.error( 'Failed to initialize', message );
 			} );
@@ -133,11 +179,11 @@ class SpotifyPlayer extends Component {
 			// Connect to the player!
 			player.connect()
 				.then( () => console.log( "Connected to the sdk server" ) );
+
 			GlobalPlayer.PlayerObject = player
 			GlobalPlayer.Name = GlobalPlayer.PlayerObject._options.name
 			GlobalPlayer.DeviceId = GlobalPlayer.PlayerObject._options.id
 			GlobalPlayer.Volume = GlobalPlayer.PlayerObject._options.volume
-			console.log( player )
 			this.props.playerObjectUpdate( GlobalPlayer );
 			this.setState( { localTime: 0 } )
 			this.interval = setInterval( () => this.tick(), 50 )
@@ -145,11 +191,20 @@ class SpotifyPlayer extends Component {
 	}
 
 	tick() {
+		// Making sure the first login pauses the player once it has loaded properly
+		if ( GlobalPlayer.FirstStart && GlobalPlayer.IsPlaying && startCount > 750 ) {
+			GlobalPlayer.PlayerObject.togglePlay()
+			GlobalPlayer.FirstStart = false
+		} else if ( GlobalPlayer.FirstStart ) startCount += 50
+
+		// If playing, keep a local counter in order to make sure the timer ticks along
 		if ( GlobalPlayer.IsPlaying === true ) {
 			GlobalPlayer.Song.CurrentPosition += 50;
 			this.setState( { localTime: this.state.localTime + 50 } );
 			this.forceUpdate();
 		}
+
+		// If the player has been going for 10 seconds and is still playing, sync up to the server to make sure the timings are right
 		if ( this.state.localTime % 10000 === 0 && GlobalPlayer.IsPlaying ) fetch( 'https://api.spotify.com/v1/me/player/currently-playing', {
 				headers: {
 					'Content-Type': 'application/json',
@@ -158,8 +213,6 @@ class SpotifyPlayer extends Component {
 			} )
 			.then( response => response.json() )
 			.then( data => {
-				//console.log( this.state.localTime )
-				//console.log( data.progress_ms )
 				if ( data.progress_ms !== GlobalPlayer.Song.CurrentPosition && data.progress_ms ) {
 					GlobalPlayer.Song.CurrentPosition = data.progress_ms;
 					this.setState( { localTime: ( data.progress_ms - data.progress_ms % 50 ) } )
@@ -170,6 +223,7 @@ class SpotifyPlayer extends Component {
 
 	}
 
+	// Cleanup code
 	componentWillUnmount() {
 		clearInterval( this.interval );
 	}
@@ -213,6 +267,7 @@ class SpotifyPlayer extends Component {
 							<p style={{gridArea:"SongName"}}>{GlobalPlayer.Song.Name}</p>
 							</div>
 							<div><p style={{gridArea:"Artist"}}>By {GlobalPlayer.Song.Artists}</p></div>
+
 
 							<div className="Album">
 
@@ -273,20 +328,26 @@ class SpotifyPlayer extends Component {
 							</div>
 
 							<div className="Timebar">
-								<input type="range" min="0" max="100" step="0.01" value={GlobalPlayer.Song.CurrentPosition/GlobalPlayer.Song.Duration*100}
+								<input type="range" min="0" max="100" step="0.01"
+									value={GlobalPlayer.Song.CurrentPosition/GlobalPlayer.Song.Duration*100}
 									onInput={(e)=>{
 										GlobalPlayer.Song.CurrentPosition = GlobalPlayer.Song.Duration*e.target.value/100;
-										//console.log(GlobalPlayer.Song.CurrentPosition/GlobalPlayer.Song.Duration*100)
+										// console.log(GlobalPlayer.Song.CurrentPosition/GlobalPlayer.Song.Duration*100)
 										this.forceUpdate();
 			 						}}
 									onMouseUp={(e) =>{
 											let val = e.target.value
 											GlobalPlayer.PlayerObject.seek(val/100*GlobalPlayer.Song.Duration)
 											this.forceUpdate();
-										}}/> <span>{Math.floor((GlobalPlayer.Song.CurrentPosition/GlobalPlayer.Song.Duration)*100*GlobalPlayer.Song.Duration/6000000)}:{('00'+Math.floor((GlobalPlayer.Song.CurrentPosition/GlobalPlayer.Song.Duration)*100*GlobalPlayer.Song.Duration/100000)%60).slice(-2)}</span>
+										}}
+									readOnly="false"
+									/>
+									<span>{Math.floor((GlobalPlayer.Song.CurrentPosition/GlobalPlayer.Song.Duration)*100*GlobalPlayer.Song.Duration/6000000)}:{('00'+Math.floor((GlobalPlayer.Song.CurrentPosition/GlobalPlayer.Song.Duration)*100*GlobalPlayer.Song.Duration/100000)%60).slice(-2)}</span>
 			 				</div>
 						</div>
-				: <p>Not enough information to display player controls</p>}
+				: GlobalPlayer.PlaybackError === 0
+					? <p>Not enough information to display player controls</p>
+					: <p>Non supported context uri, select a track from below to start player</p>}
 			</div>
 		)
 	}

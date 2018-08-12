@@ -60,6 +60,7 @@ class SpotifyApp extends Component {
 	componentDidMount() {
 		if ( window.location.href.includes( "localhost" ) ) backendURL = "http://localhost:8888/"
 		else if ( window.location.href.includes( "heroku" ) ) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
+		else backendURL = "http://" + window.location.hostname + ":8888/"
 		console.log( backendURL )
 		redirect_uri = document.location.origin + '/Applications/Spotify/'
 		console.log( redirect_uri )
@@ -81,6 +82,13 @@ class SpotifyApp extends Component {
 				)
 				.then( response => response.json() )
 				.then( data => {
+					console.log( data )
+					if ( data.error === "invalid_grant" ) {
+						this.login()
+							.then( url => {
+								window.location.href = url
+							} )
+					}
 					this.setUpState( data.AccessToken, data.RefreshToken )
 					this.interval = setInterval( () => this.tick(), 1000 )
 				} )
