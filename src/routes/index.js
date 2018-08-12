@@ -44,8 +44,7 @@ class Routes extends Component {
 
 	componentDidMount() {
 		if ( Data ) {
-			let ComponentsInfo = [ ...Data.Designs, ...Data.Applications ]
-			let dates = ComponentsInfo.map( item => {
+			let dates = Data.Applications.map( item => {
 				return item.Date
 			} )
 
@@ -54,6 +53,7 @@ class Routes extends Component {
 				if ( item === find ) return ( dates.indexOf( item ) )
 				return ( 0 )
 			} )
+			if (dates.length === 1) greatestIndex = 0
 
 			let ComponentsLocal = {}
 			let SketchesLocal = {}
@@ -73,7 +73,7 @@ class Routes extends Component {
 			} )
 
 			this.setState( {
-				MostRecent: ComponentsInfo[ greatestIndex ],
+				MostRecent: Data.Applications[ greatestIndex ],
 				Components: ComponentsLocal,
 				Sketches: SketchesLocal
 			} )
@@ -141,7 +141,7 @@ class Routes extends Component {
 											<Layout/>
 											<div className="Post">
 												<div className="ScrollBox">
-													<img className="Image" src={item.Image}/>
+													<img className="Image" alt={item.Name} src={item.Image}/>
 													<div className="Name">
 														<h1>{item.Name}</h1>
 														<hr/>
