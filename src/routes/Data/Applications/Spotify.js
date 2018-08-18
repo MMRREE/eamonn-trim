@@ -5,6 +5,7 @@ import queryString from 'query-string'
 // App required js
 import { SpotifyPlayer } from './Spotify/SpotifyPlayer.js'
 import PlaylistDisplay from './Spotify/PlaylistDisplay.js'
+import UserProfile from './Spotify/UserProfile.js'
 import Filter from './Spotify/Filter.js'
 import HourCounter from './Spotify/HourCounter.js'
 import PlaylistCounter from './Spotify/PlaylistCounter.js'
@@ -150,6 +151,8 @@ class SpotifyApp extends Component {
 						ServerData: data,
 						AccessToken: accessToken
 					} )
+					this.state.ServerData && this.state.ServerData.User &&
+						this.state.ServerData.User.Name && this.state.ServerData.Playlists ? this.setState( { "UserPlaylists": this.state.ServerData.Playlists } ) : this.Nada()
 					console.log( this.state )
 				} )
 		}
@@ -172,21 +175,28 @@ class SpotifyApp extends Component {
 		}
 	}
 
+	Nada() {
+
+	}
+
 	render() {
 		let count = 0;
-		let playlistToRender = this.state.ServerData.UserName && this.state.ServerData.Playlists ? this.state.ServerData.Playlists.filter( Playlist => {
-			let filter = this.state.FilterString.toLowerCase()
+		let filteredPlaylists = this.state.ServerData && this.state.ServerData.User &&
+			this.state.ServerData.User.Name && this.state.ServerData.Playlists ? this.state.ServerData.Playlists.filter( Playlist => {
+				let filter = this.state.FilterString.toLowerCase()
 
-			let matchesPlaylist = Playlist.Name.toLowerCase()
-				.includes( filter )
+				let matchesPlaylist = Playlist.Name.toLowerCase()
+					.includes( filter )
 
-			let matchesTrack = Playlist.Songs.find( Song => Song.Name.toLowerCase()
-				.includes( filter ) )
+				let matchesTrack = Playlist.Songs.find( Song => Song.Name.toLowerCase()
+					.includes( filter ) )
 
-			return matchesPlaylist || matchesTrack
-		} ) : [];
+				return matchesPlaylist || matchesTrack
+			} ) : [];
 
-		let title = this.state.ServerData.UserName && this.state.ServerData.Playlists ? this.state.ServerData.UserName + "'s playList" : "";
+		let playlistToRender = this.state.SearchAlbums ? this.state.SearchAlbums : filteredPlaylists
+
+		let title = this.state.ServerData && this.state.ServerData.User && this.state.ServerData.User.Name && this.state.ServerData.Playlists ? this.state.ServerData.User.Name + "'s playList" : "";
 		title ? document.title = title : document.title = "Spotify Playlists"
 
 		return (
@@ -195,22 +205,66 @@ class SpotifyApp extends Component {
 					// if signed in show the whole applicaiton
 					<div className="Display">
 						<NavBar style={{gridArea:"NavBar"}}/>
-						<h1 className="Header">{title}</h1>
+						{/*<h1 className="Header">{title}</h1>*/}
+						<UserProfile UserData={this.state.ServerData.User}/>
 						<SpotifyPlayer className="Player" playerObjectUpdate={player =>
 									this.setState({PlayerInfo: player})
 							} accessToken={this.state.AccessToken}/>
 						<PlaylistCounter playlists={playlistToRender}/>
 						<HourCounter playlists={playlistToRender}/>
-						<Filter onFilterChange={text =>
-								this.setState({FilterString: text})}/>
+						<input type="button" value="Favorites" className="FavoriteButton" style={{gridArea:"FavoriteButton"}}/>
+						<input type="button" value="Playlists" className="PlaylistsButton" style={{gridArea:"PlaylistsButton"}}/>
+						<Filter onFilterChange={text =>{
+											this.setState({FilterString: text})
+											if(filteredPlaylists.length > 0) this.setState({"SearchAlbums":null})
+											// else if(filteredPlaylists.length === 0){fetch(backendURL + 'spotify/AlbumSearch',{
+											// 		method: "POST",
+											// 		headers: { 'content-type': 'application/json' },
+											// 		mode: 'cors',
+											// 		body: JSON.stringify( {
+											// 			"access_token": this.state.AccessToken,
+											// 			"search": text
+											// 	 } )
+											// 	}).then(response => response.json()).then(data=>{
+											// 		console.log(data)
+											// 		this.setState({"SearchAlbums": data})
+											// 	})}
+											// else{
+											// 	playlistToRender = this.state.UserPlaylists
+											// 	this.setState({"SearchAlbums": null})
+											// }
+										}}
+									onEnter={(text)=>{
+										if(playlistToRender.length === 0) {fetch(backendURL + 'spotify/AlbumSearch',{
+												method: "POST",
+												headers: { 'content-type': 'application/json' },
+												mode: 'cors',
+												body: JSON.stringify( {
+													"access_token": this.state.AccessToken,
+													"search": text
+											 } )
+											}).then(response => response.json()).then(data=>{
+												console.log(data)
+												this.setState({"SearchAlbums": data})
+											})}
+										else{
+											playlistToRender = this.state.UserPlaylists
+											this.setState({"SearchAlbums": null})
+										}
+									}}/>
 						{playlistToRender.map(Playlist =>
-							<PlaylistDisplay key={count++} token={this.state.AccessToken} index={count} playlist={Playlist}/>)
+							{
+								return(
+								<PlaylistDisplay key={count++} token={this.state.AccessToken} index={count} playlist={Playlist}/>
+							)}
+						)
 						}
 					</div>
-				: this.state.AccessToken
+				: queryString.parse( window.location.search )
+					.code
 					? 	<div>
 							<NavBar/>
-							<div className="Loading">Loading data...</div>
+							<div className="Loading">Loading...</div>
 						</div>
 					:
 					// otherwise show a log in button
