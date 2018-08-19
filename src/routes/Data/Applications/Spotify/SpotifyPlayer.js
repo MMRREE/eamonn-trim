@@ -24,21 +24,38 @@ let GlobalPlayer = {
 let PlayBackIcons = []
 
 function SpotifyPlayerStartMusic( uri, context_uri, accessToken ) {
-	fetch( 'https://api.spotify.com/v1/me/player/play?device_id=' + GlobalPlayer.DeviceId, {
-			method: 'PUT',
-			body: JSON.stringify( {
-				"context_uri": context_uri,
-				"offset": { "uri": uri }
-			} ),
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': 'Bearer ' + accessToken
-			},
-		} )
-		.then( response => {
-			GlobalPlayer.Render = true
-			GlobalPlayer.IsPlaying = true
-		} )
+	if ( uri ) {
+		fetch( 'https://api.spotify.com/v1/me/player/play?device_id=' + GlobalPlayer.DeviceId, {
+				method: 'PUT',
+				body: JSON.stringify( {
+					"context_uri": context_uri,
+					"offset": { "uri": uri }
+				} ),
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer ' + accessToken
+				},
+			} )
+			.then( response => {
+				GlobalPlayer.Render = true
+				GlobalPlayer.IsPlaying = true
+			} )
+	} else {
+		fetch( 'https://api.spotify.com/v1/me/player/play?device_id=' + GlobalPlayer.DeviceId, {
+				method: 'PUT',
+				body: JSON.stringify( {
+					"context_uri": context_uri
+				} ),
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer ' + accessToken
+				},
+			} )
+			.then( response => {
+				GlobalPlayer.Render = true
+				GlobalPlayer.IsPlaying = true
+			} )
+	}
 }
 
 class SpotifyPlayer extends Component {

@@ -10,7 +10,10 @@ class Filter extends Component {
 						this.props.onEnter(event.target.value)
 					}
 				}
-				}/>
+				}
+				onKeyDown={(event)=>{
+					this.props.onDown(event.target.value)
+				}}/>
 			</div>
 		);
 	}
