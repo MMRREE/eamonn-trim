@@ -47,11 +47,12 @@ class Routes extends Component {
 			let dates = Data.Applications.map( item => {
 				return item.Date
 			} )
-
+			
 			let find = this.findGreatest( dates )
+			let greatestIndex = null
 			if (dates.length === 1) greatestIndex = 0
 			else{
-				let greatestIndex = dates.findIndex( item => {
+				greatestIndex = dates.findIndex( item => {
 					if ( item === find ) return ( dates.indexOf( item ) )
 					return ( 0 )
 				} )
