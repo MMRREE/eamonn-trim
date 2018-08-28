@@ -49,11 +49,13 @@ class Routes extends Component {
 			} )
 
 			let find = this.findGreatest( dates )
-			let greatestIndex = dates.findIndex( item => {
-				if ( item === find ) return ( dates.indexOf( item ) )
-				return ( 0 )
-			} )
 			if (dates.length === 1) greatestIndex = 0
+			else{
+				let greatestIndex = dates.findIndex( item => {
+					if ( item === find ) return ( dates.indexOf( item ) )
+					return ( 0 )
+				} )
+			}
 
 			let ComponentsLocal = {}
 			let SketchesLocal = {}
