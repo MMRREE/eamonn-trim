@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {SpotifyPlayerStartMusic} from './SpotifyPlayer.js'
+import { SpotifyPlayerStartMusic } from './SpotifyPlayer.js'
 
 
 class PlaylistDisplay extends Component {
@@ -16,7 +16,7 @@ class PlaylistDisplay extends Component {
 									<div key={playlist.Songs.indexOf(song)}>
 										<hr style={{margin:"0"}}/>
 										<button onClick={() =>{
-											SpotifyPlayerStartMusic(song.Uri, playlist.ContextUri, this.props.token);
+											SpotifyPlayerStartMusic(song.Uri ? null : song.Uri, playlist.ContextUri, this.props.token);
 										}} className="songButton">{song.Name}</button>
 									</div>
 								)

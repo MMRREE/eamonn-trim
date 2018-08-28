@@ -22,7 +22,7 @@ class HourCounter extends Component {
 				string = seconds + " seconds";
 			}
 		} else {
-			string = "Filtered out all the songs!"
+			string = "Press enter to search!"
 		}
 		return string;
 	}
@@ -38,7 +38,7 @@ class HourCounter extends Component {
 			<div className="Aggregate" style={{gridArea:"Hours"}}>
 				<h2>{hours}</h2>
 			</div>
-)
+		)
 	}
 }
 

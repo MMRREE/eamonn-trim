@@ -20,26 +20,42 @@ let GlobalPlayer = {
 		Uri: 'spotify:track:3rDtYwyfZNfTfxjyivntg5'
 	}
 }
-let backendURL = ""
 
-let startCount = 0;
+let PlayBackIcons = []
 
 function SpotifyPlayerStartMusic( uri, context_uri, accessToken ) {
-	fetch( 'https://api.spotify.com/v1/me/player/play?device_id=' + GlobalPlayer.DeviceId, {
-			method: 'PUT',
-			body: JSON.stringify( {
-				"context_uri": context_uri,
-				"offset": { "uri": uri }
-			} ),
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': 'Bearer ' + accessToken
-			},
-		} )
-		.then( response => {
-			GlobalPlayer.Render = true
-			GlobalPlayer.IsPlaying = true
-		} )
+	if ( uri ) {
+		fetch( 'https://api.spotify.com/v1/me/player/play?device_id=' + GlobalPlayer.DeviceId, {
+				method: 'PUT',
+				body: JSON.stringify( {
+					"context_uri": context_uri,
+					"offset": { "uri": uri }
+				} ),
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer ' + accessToken
+				},
+			} )
+			.then( response => {
+				GlobalPlayer.Render = true
+				GlobalPlayer.IsPlaying = true
+			} )
+	} else {
+		fetch( 'https://api.spotify.com/v1/me/player/play?device_id=' + GlobalPlayer.DeviceId, {
+				method: 'PUT',
+				body: JSON.stringify( {
+					"context_uri": context_uri
+				} ),
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': 'Bearer ' + accessToken
+				},
+			} )
+			.then( response => {
+				GlobalPlayer.Render = true
+				GlobalPlayer.IsPlaying = true
+			} )
+	}
 }
 
 class SpotifyPlayer extends Component {
@@ -57,6 +73,15 @@ class SpotifyPlayer extends Component {
 
 	componentDidMount() {
 		( async () => {
+			//Img source locations for the various icons to be displayed within the player
+			PlayBackIcons[ 'Pause' ] = "https://cdn2.iconfinder.com/data/icons/media-and-navigation-buttons-square/512/Button_4-512.png"
+			PlayBackIcons[ 'Play' ] = "https://cdn2.iconfinder.com/data/icons/media-and-navigation-buttons-square/512/Button_3-512.png"
+			PlayBackIcons[ 'Previous' ] = "https://cdn2.iconfinder.com/data/icons/media-and-navigation-buttons-square/512/Button_8-512.png"
+			PlayBackIcons[ 'Next' ] = "https://cdn2.iconfinder.com/data/icons/media-and-navigation-buttons-square/512/Button_8-512.png"
+			PlayBackIcons[ 'Shuffle' ] = "https://cdn2.iconfinder.com/data/icons/arrows-set-2/512/17-512.png"
+			PlayBackIcons[ 'Repeat' ] = "https://cdn2.iconfinder.com/data/icons/arrows-set-2/512/14-512.png"
+
+
 			const { Player } = await this.waitForSpotifyWebPlaybackSDKToLoad();
 			const token = this.props.accessToken
 			const player = new Player( {
@@ -74,6 +99,7 @@ class SpotifyPlayer extends Component {
 			// Playback status updates the local data
 			player.addListener( 'player_state_changed', state => {
 				if ( state !== null ) {
+					GlobalPlayer.Render = true
 					GlobalPlayer.Song.Name = state.track_window.current_track.name
 					GlobalPlayer.Song.Duration = state.duration
 					GlobalPlayer.Song.Artists = state.track_window.current_track.artists[ 0 ].name
@@ -99,57 +125,25 @@ class SpotifyPlayer extends Component {
 				}
 			} );
 
-			// Ready, get recently played and then start to play based on this song and context
+			// Ready, transfer song playback
 			player.addListener( 'ready', ( { device_id } ) => {
+				GlobalPlayer.DeviceId = device_id
+				let backendURL = ""
 				if ( window.location.href.includes( "localhost" ) ) backendURL = "http://localhost:8888/"
 				else if ( window.location.href.includes( "heroku" ) ) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
 				else backendURL = "http://" + window.location.hostname + ":8888/"
-				GlobalPlayer.DeviceId = device_id
-				fetch( backendURL + "spotify/recentlyPlayed", {
+				fetch( backendURL + "spotify/transferPlay", {
 						method: "POST",
-						headers: { 'content-type': 'application/json' },
-						mode: 'cors',
-						body: JSON.stringify( { "access_token": token } )
+						body: JSON.stringify( {
+							"device_id": device_id,
+							"access_token": token
+						} ),
+						headers: { 'Content-Type': 'application/json' },
+						mode: 'cors'
 					} )
-					.then( response => response.json() )
-					.then( rp => {
-						if ( rp ) {
-							fetch( rp.Song.Context, {
-									method: "GET",
-									headers: {
-										'Content-Type': 'application/json',
-										'Authorization': 'Bearer ' + token
-									}
-								} )
-								.then( response => response.json() )
-								.then( ret => {
-									fetch( 'https://api.spotify.com/v1/me/player/play?device_id=' + GlobalPlayer.DeviceId, {
-											method: 'PUT',
-											body: JSON.stringify( {
-												"context_uri": ret.uri,
-												"offset": { "uri": rp.Song.Uri }
-											} ),
-											headers: {
-												'Content-Type': 'application/json',
-												'Authorization': 'Bearer ' + token
-											},
-										} )
-										.then( response => {
-											if ( response.status === 204 ) {
-												GlobalPlayer.Render = true
-												GlobalPlayer.FirstStart = true
-											}
-											return response.json()
-										} )
-										.then( info => {
-											if ( info.error.message === "Non supported context uri" ) {
-												GlobalPlayer.PlaybackError = 1
-											}
-										} )
-								} )
-							this.props.playerObjectUpdate( GlobalPlayer );
-							this.forceUpdate();
-						}
+					.then( response => {
+						if ( response.status === 204 ) GlobalPlayer.Render = true
+						console.log( response )
 					} )
 			} );
 
@@ -191,11 +185,6 @@ class SpotifyPlayer extends Component {
 	}
 
 	tick() {
-		// Making sure the first login pauses the player once it has loaded properly
-		if ( GlobalPlayer.FirstStart && GlobalPlayer.IsPlaying && startCount > 750 ) {
-			GlobalPlayer.PlayerObject.togglePlay()
-			GlobalPlayer.FirstStart = false
-		} else if ( GlobalPlayer.FirstStart ) startCount += 50
 
 		// If playing, keep a local counter in order to make sure the timer ticks along
 		if ( GlobalPlayer.IsPlaying === true ) {
@@ -263,51 +252,44 @@ class SpotifyPlayer extends Component {
 			<div className="SpotifyPlayer">
 				{GlobalPlayer.Render ?
 						<div className="PlayerDisplay">
-							<div>
+
 							<p style={{gridArea:"SongName"}}>{GlobalPlayer.Song.Name}</p>
-							</div>
-							<div><p style={{gridArea:"Artist"}}>By {GlobalPlayer.Song.Artists}</p></div>
 
+							<p style={{gridArea:"Artist"}}>By {GlobalPlayer.Song.Artists}</p>
 
-							<div className="Album">
+							<img className="AlbumImg" style={{gridArea:"AlbumImg"}} src={GlobalPlayer.Song.AlbumImg} alt={GlobalPlayer.Song.Album}/>
 
-								<p>{GlobalPlayer.Song.Album}</p>
-
-								<img src={GlobalPlayer.Song.AlbumImg} alt={GlobalPlayer.Song.Album}/>
-							</div>
+							<p style={{gridArea:"AlbumName"}}>{GlobalPlayer.Song.Album}</p>
 
 							<div className="Repeat">
 								<p>{GlobalPlayer.RepeatContext}</p>
 								<button onClick={()=>{
 									this.repeat()
 									}}>
-									<img alt="Repeat" src='https://cdn2.iconfinder.com/data/icons/game-center-mixed-icons/512/repeat.png'/>
+									<img alt="Repeat" src={PlayBackIcons['Repeat']}/>
 								</button>
 							</div>
 
-
-
 							<button className="Previous" style={{gridArea: "Previous"}} onClick={()=>{
-									GlobalPlayer.PlayerObject.previousTrack()//.then(() => console.log("Set to previous track!"));
+									GlobalPlayer.PlayerObject.previousTrack()
 								}}>
-								<img alt="Previous Track" style={{transform:"rotate(180deg)"}} src='https://cdn2.iconfinder.com/data/icons/media-and-navigation-buttons-square/512/Button_8-512.png'/>
+								<img alt="Previous Track" style={{transform:"rotate(180deg)"}} src={PlayBackIcons['Previous']}/>
 							</button>
 
-
 							<button style={{gridArea: "PausePlay"}} onClick={()=>{
-									GlobalPlayer.PlayerObject.togglePlay()//.then(()=>console.log("Paused/Played!"));
+									GlobalPlayer.PlayerObject.togglePlay()
 								}}>
 								{GlobalPlayer.IsPlaying
-									? <img alt="Pause"  src='https://cdn2.iconfinder.com/data/icons/media-and-navigation-buttons-square/512/Button_4-512.png'/>
-								: <img alt="Play"  src='https://cdn2.iconfinder.com/data/icons/media-and-navigation-buttons-square/512/Button_3-512.png'/>
-							}
+									? <img alt="Pause"  src={PlayBackIcons['Pause']}/>
+									: <img alt="Play"  src={PlayBackIcons['Play']}/>
+								}
 							</button>
 
 
 							<button className="NextTrack" style={{gridArea: "Next"}} onClick={()=>{
-									GlobalPlayer.PlayerObject.nextTrack()//.then(()=>console.log("Set to next track!"));
+									GlobalPlayer.PlayerObject.nextTrack()
 								}}>
-								<img alt="Next Track" src='https://cdn2.iconfinder.com/data/icons/media-and-navigation-buttons-square/512/Button_8-512.png'/>
+								<img alt="Next Track" src={PlayBackIcons['Next']}/>
 							</button>
 
 							<div className="Shuffle">
@@ -315,7 +297,7 @@ class SpotifyPlayer extends Component {
 								<button onClick={()=>{
 									this.shuffle()
 									}}>
-									<img alt="Shuffle" src='https://cdn2.iconfinder.com/data/icons/arrows-set-2/512/17-512.png'/>
+									<img alt="Shuffle" src={PlayBackIcons['Shuffle']}/>
 								</button>
 							</div>
 
@@ -332,7 +314,6 @@ class SpotifyPlayer extends Component {
 									value={GlobalPlayer.Song.CurrentPosition/GlobalPlayer.Song.Duration*100}
 									onInput={(e)=>{
 										GlobalPlayer.Song.CurrentPosition = GlobalPlayer.Song.Duration*e.target.value/100;
-										// console.log(GlobalPlayer.Song.CurrentPosition/GlobalPlayer.Song.Duration*100)
 										this.forceUpdate();
 			 						}}
 									onMouseUp={(e) =>{
@@ -341,12 +322,14 @@ class SpotifyPlayer extends Component {
 											this.forceUpdate();
 										}}
 									readOnly="false"
-									/>
-									<span>{Math.floor((GlobalPlayer.Song.CurrentPosition/GlobalPlayer.Song.Duration)*100*GlobalPlayer.Song.Duration/6000000)}:{('00'+Math.floor((GlobalPlayer.Song.CurrentPosition/GlobalPlayer.Song.Duration)*100*GlobalPlayer.Song.Duration/100000)%60).slice(-2)}</span>
+								/>
+									<span>
+										{Math.floor((GlobalPlayer.Song.CurrentPosition/GlobalPlayer.Song.Duration)*100*GlobalPlayer.Song.Duration/6000000)}:{('00'+Math.floor((GlobalPlayer.Song.CurrentPosition/GlobalPlayer.Song.Duration)*100*GlobalPlayer.Song.Duration/100000)%60).slice(-2)}
+									</span>
 			 				</div>
 						</div>
 				: GlobalPlayer.PlaybackError === 0
-					? <p>Not enough information to display player controls</p>
+					? <p>Please select a song from below to start playback</p>
 					: <p>Non supported context uri, select a track from below to start player</p>}
 			</div>
 		)

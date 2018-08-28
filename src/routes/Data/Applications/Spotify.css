@@ -60,17 +60,33 @@
 	display:grid;
 	justify-content: center;
 	grid-template-columns:25% 25% 25% 25%;
-	grid-template-rows:auto 298px auto;
+	grid-template-rows:auto auto 10vh auto;
 	grid-template-areas:
-	"None Title Title NavBar"
-	"Player PlaylistList Hours Filter"
+	"Player Player Player Player"
+	"UserProfile PlaylistList Hours NavBar"
+	"PlaylistsButton Filter Filter FavoriteButton"
 	"Playlists1 Playlists2 Playlists3 Playlists4"
 	"Playlists5 Playlists6 Playlists7 Playlists8"
 	"Playlists9 Playlists10 Playlists11 Playlists12"
 	"Playlists13 Playlists14 Playlists15 Playlists16"
-	"Playlists17 Playlists18 Playlists19 Playlists20";
+	"Playlists17 Playlists18 Playlists19 Playlists20"
+	"Playlists21 Playlists22 Playlists23 Playlists24"
+	"Playlists25 Playlists26 Playlists27 Playlists28"
+	"Playlists29 Playlists30 Playlists31 Playlists32"
+	"Playlists33 Playlists34 Playlists35 Playlists36"
+	"Playlists37 Playlists38 Playlists39 Playlists40"
+	"Playlists41 Playlists42 Playlists43 Playlists44"
+	"Playlists45 Playlists46 Playlists47 Playlists48"
+	"Playlists49 Playlists50 Playlists51 Playlists52";
 	text-align: center;
 	top: 0px
+}
+
+.Spotify > .Display > .NavBar{
+	position: sticky;
+	top:20vh;
+	background: rgba(10, 10, 10, 0.75);
+	height:50px;
 }
 
 .Spotify > .Display > .Header{
@@ -81,10 +97,13 @@
 .Spotify > .Display > .SpotifyPlayer{
 	grid-area:Player;
 	position:sticky;
+	border-style:outset;
+	box-sizing: border-box;
 	top:0px;
-	left:0px;
-	z-index: 20;
-	background-color: rgba(10,10,10, 0.85)
+	height:20vh;
+	width:100vw;
+	z-index: 25;
+	background-color: rgba(10,10,10, 1)
 }
 
 /* --- Overall App Styles --- */
@@ -97,6 +116,7 @@
 	position: absolute;
 	text-align: center;
 	top: 50%;
+	width:100%;
 	transform: translate(0%, -50%);
 }
 
@@ -114,17 +134,15 @@
 }
 
 .Spotify > .Display > .SpotifyPlayer > .PlayerDisplay{
-	width: auto;
 	background: none;
-	border-style:outset;
+	height:100%;
+	width:100%;
 	display:grid;
-	grid-template-columns:20% 20% 20% 20% 20%;
-	grid-template-rows:25% 25% 25% 25%;
+	grid-template-columns:10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
+	grid-template-rows:75% 25%;
 	grid-template-areas:
-	"Album Album SongName SongName SongName"
-	"Album Album Artist Artist Artist"
-	"Shuffle Previous PausePlay Next Repeat"
-	"Timebar Timebar Timebar Volume Volume";
+	"AlbumImg SongName Shuffle Previous PausePlay PausePlay Next Repeat . Volume"
+	"AlbumImg AlbumName Timebar Timebar Timebar Timebar Timebar Timebar . Volume";
 	position: sticky;
 	text-align: center;
 	top: 0px;
@@ -150,31 +168,11 @@
 	grid-area: Album;
 }
 
-.Spotify > .Display > .SpotifyPlayer > .PlayerDisplay > .Album > p{
-	background: none;
-	font-weight: bold;
-	color: white;
-	text-shadow:
-  -1px -1px 0 #000,
-   1px -1px 0 #000,
-  -1px 1px 0 #000,
-   1px 1px 0 #000;
-	margin-top: 0;
-	opacity: 1;
-	z-index: 3;
-	margin: 0;
-	position:absolute;
-	top:8px;
-	left:50%;
-	font-size:150%;
-	transform:translate(-50%, 0%);
-	width: 100%
-}
 
-.Spotify > .Display > .SpotifyPlayer > .PlayerDisplay > .Album > img{
+
+.Spotify > .Display > .SpotifyPlayer > .PlayerDisplay > .AlbumImg {
 	width:100%;
 	height:100%;
-	opacity: 0.55;
 	z-index: 0;
 }
 
@@ -228,6 +226,9 @@
 .Spotify > .Display > .SpotifyPlayer > .PlayerDisplay > .Timebar > input{
 	width:85%;
 	float:left;
+	position: relative;
+	top:50%;
+	transform:translate(0, -50%);
 	margin:0;
 	-webkit-appearance: none;
 	background:transparent;
@@ -293,6 +294,8 @@
 	float:left;
 	width:13.5%;
 	position: relative;
+	top:50%;
+	transform:translate(0, -50%);
 	left:0;
 	text-align: center;
 }
@@ -301,18 +304,27 @@
 	width:100%;
 	grid-area:Volume;
 	justify-content: center;
+	background-image:url("https://cdn4.iconfinder.com/data/icons/web-ui-color/128/Audio-512.png");
+	background-size:100% 100%;
+	background-repeat: no-repeat;
 }
 
 .Spotify > .Display > .SpotifyPlayer > .PlayerDisplay > .Volume > input{
-	width:75%;
+	width:70%;
+	left:5%;
 	float:left;
 	margin:0;
+	position: relative;
+	top:50%;
+	transform:translate(0, -50%);
 }
 
 .Spotify > .Display > .SpotifyPlayer > .PlayerDisplay > .Volume > span{
 	float:left;
 	width:22.5%;
 	position: relative;
+	top:50%;
+	transform:translate(0, -50%);
 	left:0;
 	text-align: center;
 }
@@ -331,9 +343,11 @@
 	position: absolute;
 	background: rgba(10,10,10,0.6);
 	border:white solid;
+	width:12%;
 	left:50%;
 	top:50%;
 	transform: translate(-50%, -50%);
+	transition:width 0.25s;
 	color:white;
 	font-size: 2.3vmin;
 	background-image:url('https://cdn1.iconfinder.com/data/icons/hawcons/32/698627-icon-111-search-512.png');
@@ -341,6 +355,10 @@
 	background-repeat: no-repeat;
 	padding-left: 1.2em;
 	background-size: 1em 1em;
+}
+
+.Spotify > .Display > .Filter > input:focus{
+	width:75%;
 }
 
 /* --- Filter --- */
