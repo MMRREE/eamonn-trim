@@ -59,17 +59,16 @@ class SpotifyApp extends Component {
 		}
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		if ( window.location.href.includes( "localhost" ) ) backendURL = "http://localhost:8888/"
 		else if ( window.location.href.includes( "heroku" ) ) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
 		else backendURL = "http://" + window.location.hostname + ":8888/"
-		console.log( backendURL )
 		redirect_uri = document.location.origin + '/Applications/Spotify/'
-		console.log( redirect_uri )
 
 		if ( queryString.parse( window.location.search )
 			.code ) {
-			fetch(
+			let tokenPayload = await(
+				await fetch(
 					backendURL + "spotify/token", {
 						method: "POST",
 						body: JSON.stringify( {
@@ -81,19 +80,18 @@ class SpotifyApp extends Component {
 						headers: { 'Content-Type': 'application/json' },
 						mode: 'cors'
 					}
-				)
-				.then( response => response.json() )
-				.then( data => {
-					console.log( data )
-					if ( data.error === "invalid_grant" ) {
-						this.login()
-							.then( url => {
-								window.location.href = url
-							} )
-					}
-					this.setUpState( data.AccessToken, data.RefreshToken )
-					this.interval = setInterval( () => this.tick(), 1000 )
-				} )
+				)).json()
+			if(tokenPayload.error === "invalid_grant"){
+				console.log(tokenPayload.error)
+				let redirect = await this.login()
+				window.location.href = redirect
+			}
+			else{
+				console.log(tokenPayload.RefreshToken)
+				await this.setUpState(tokenPayload.AccessToken, tokenPayload.RefreshToken, true)
+				this.interval = setInterval(()=>this.tick(), 1000)
+				console.log(this.state)
+			}
 		}
 
 		//script for running for the wed playback SDK
@@ -107,56 +105,63 @@ class SpotifyApp extends Component {
 		} )
 	}
 
-	tick() {
-		this.setState( { localTime: this.state.localTime + 1 } )
-		// console.log(this.state.localTime)
-		if ( this.state.localTime >= 3600 ) {
-
-			fetch(
-					backendURL + 'spotify/token', {
+	async setUpState( accessToken = null, refreshToken = null, refresh = false ) {
+		if ( accessToken ) {
+			if(refresh) {
+				let playlistData = await(
+					await fetch( backendURL + 'spotify/playlistData', {
 						method: "POST",
-						body: JSON.stringify( {
-							"grant_type": "refresh_token",
-							"refresh_token": this.state.RefreshToken
-						} ),
 						headers: { 'content-type': 'application/json' },
-						mode: 'cors'
-					}
-				)
-				.then( response => response.json() )
-				.then( data => {
-					if ( data.RefreshToken ) {
-						// console.log("new RT", data.RefreshToken)
-						this.fetchAppData( data.AccessToken, data.RefreshToken )
-					} else { this.fetchAppData( data.AccessToken, this.state.RefreshToken ) }
-					this.setState( { localTime: 0 } )
-				} )
+						mode: 'cors',
+						body: JSON.stringify( { "access_token": accessToken } )
+					} )).json()
+				this.setState({
+					ServerData: playlistData,
+					AccessToken: accessToken,
+					RefreshToken: refreshToken
+				})
+			} else{
+				this.setState({
+					AccessToken: accessToken,
+					RefreshToken: refreshToken
+				})
+			}
+			if(this.state.ServerData.Playlists) this.setState({
+				"UserPlaylists": this.state.ServerData.Playlists
+			})
+		}
+	}
+
+
+	async tick() {
+		this.setState( { localTime: this.state.localTime + 1 } )
+
+		if ( this.state.localTime >= 3600 ) {
+			let refreshTokenPayload = await(
+				await fetch(
+				backendURL + 'spotify/token', {
+					method: "POST",
+					body: JSON.stringify( {
+						"grant_type": "refresh_token",
+						"refresh_token": this.state.RefreshToken
+					} ),
+					headers: { 'content-type': 'application/json' },
+					mode: 'cors'
+				}
+			)).json()
+			console.log(refreshTokenPayload)
+			if(refreshTokenPayload.RefreshToken){
+				console.log("new RT", refreshTokenPayload.RefreshToken)
+				this.setUpState( refreshTokenPayload.AccessToken, refreshTokenPayload.RefreshToken )
+			} else{
+				this.setUpState( refreshTokenPayload.AccessToken, this.state.RefreshToken )
+			}
+			this.setState( { localTime: 0 } )
 		}
 	}
 
 	componentWillUnmount() {
 		clearInterval( this.interval )
-	}
-
-	setUpState( accessToken = null, refreshToken = null ) {
-		if ( accessToken ) {
-			fetch( backendURL + 'spotify/playlistData', {
-					method: "POST",
-					headers: { 'content-type': 'application/json' },
-					mode: 'cors',
-					body: JSON.stringify( { "access_token": accessToken } )
-				} )
-				.then( response => response.json() )
-				.then( data => {
-					this.setState( {
-						ServerData: data,
-						AccessToken: accessToken
-					} )
-					this.state.ServerData && this.state.ServerData.User &&
-						this.state.ServerData.User.Name && this.state.ServerData.Playlists ? this.setState( { "UserPlaylists": this.state.ServerData.Playlists } ) : this.Nada()
-					console.log( this.state )
-				} )
-		}
 	}
 
 	login( callback ) {
@@ -181,7 +186,6 @@ class SpotifyApp extends Component {
 	}
 
 	render() {
-		let count = 0;
 		let filteredPlaylists = this.state.ServerData && this.state.ServerData.Playlists ? this.state.ServerData.Playlists.filter( Playlist => {
 			let filter = this.state.FilterString.toLowerCase()
 
@@ -283,7 +287,7 @@ class SpotifyApp extends Component {
 						{playlistToRender.map(Playlist =>
 							{
 								return(
-								<PlaylistDisplay key={count++} token={this.state.AccessToken} index={count} playlist={Playlist}/>
+								<PlaylistDisplay key={playlistToRender.indexOf(Playlist)} token={this.state.AccessToken} index={playlistToRender.indexOf(Playlist)} playlist={Playlist}/>
 							)}
 						)
 						}
