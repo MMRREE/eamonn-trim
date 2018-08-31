@@ -59,7 +59,19 @@ class SpotifyApp extends Component {
 		}
 	}
 
-	async componentDidMount() {
+	handleScriptLoad(){
+		//script for running for the wed playback SDK
+		return new Promise(resolve =>{
+			if(window.Spotify){
+				resolve()
+			} else{
+				window.onSpotifyWebPlaybackSDKReady = resolve;
+			}
+		})
+	}
+
+	async componentWillMount() {
+		this.handleScriptLoad()
 		if ( window.location.href.includes( "localhost" ) ) backendURL = "http://localhost:8888/"
 		else if ( window.location.href.includes( "heroku" ) ) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
 		else backendURL = "http://" + window.location.hostname + ":8888/"
@@ -82,27 +94,15 @@ class SpotifyApp extends Component {
 					}
 				)).json()
 			if(tokenPayload.error === "invalid_grant"){
-				console.log(tokenPayload.error)
 				let redirect = await this.login()
 				window.location.href = redirect
 			}
 			else{
-				console.log(tokenPayload.RefreshToken)
 				await this.setUpState(tokenPayload.AccessToken, tokenPayload.RefreshToken, true)
 				this.interval = setInterval(()=>this.tick(), 1000)
-				console.log(this.state)
 			}
+			if(this.state.ServerData.UserName !== "") console.log(this.state)
 		}
-
-		//script for running for the wed playback SDK
-		const script = document.createElement( "script" );
-		script.src = "https://sdk.scdn.co/spotify-player.js";
-		script.async = true;
-		document.body.appendChild( script );
-		this.setState( {
-			count: 0,
-			localTime: 0
-		} )
 	}
 
 	async setUpState( accessToken = null, refreshToken = null, refresh = false ) {
@@ -181,10 +181,6 @@ class SpotifyApp extends Component {
 		}
 	}
 
-	Nada() {
-
-	}
-
 	render() {
 		let filteredPlaylists = this.state.ServerData && this.state.ServerData.Playlists ? this.state.ServerData.Playlists.filter( Playlist => {
 			let filter = this.state.FilterString.toLowerCase()
@@ -224,7 +220,6 @@ class SpotifyApp extends Component {
 					// if signed in show the whole applicaiton
 					<div className="Display">
 						<NavBar style={{gridArea:"NavBar"}}/>
-						{/*<h1 className="Header">{title}</h1>*/}
 						<UserProfile UserData={this.state.ServerData.User}/>
 						<SpotifyPlayer className="Player" playerObjectUpdate={player =>
 									this.setState({PlayerInfo: player})
@@ -232,11 +227,9 @@ class SpotifyApp extends Component {
 						<PlaylistCounter playlists={playlistToRender}/>
 						{!this.state.FavoritesClicked ? <HourCounter playlists={playlistToRender}/> : ""}
 						<input type="button" value="Favorites" className="FavoriteButton" style={{gridArea:"FavoriteButton"}} onClick={()=>{
-							// console.log("Favorites")
 							this.setState({"FavoritesClicked": true})
 						}}/>
 						<input type="button" value="Playlists" className="PlaylistsButton" style={{gridArea:"PlaylistsButton"}} onClick={()=>{
-							// console.log("Playlists")
 							this.setState({"FavoritesClicked": false})
 						}}/>
 						<Filter onFilterChange={text =>{
