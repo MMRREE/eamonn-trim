@@ -16,7 +16,7 @@ class Contact extends Component {
 					"Comment": {
 						"Author": inputAuthor,
 						"Comment": inputComment,
-						"Approved": true
+						"Approved": false
 					}
 				} ),
 				headers: { 'content-type': 'application/json' },
@@ -37,7 +37,6 @@ class Contact extends Component {
 			} )
 		).json()
 		this.setState({Comments:comments.Comments})
-		console.log(this.state)
 	}
 
 	render() {
@@ -45,27 +44,6 @@ class Contact extends Component {
 			<div className="Contact">
 
 				<Layout/>
-
-				<div className="DisplayCommentBox">
-				<div style={{textAlign:"center", fontSize:"5.5vmin"}}>Comments</div>
-					<div className="DisplayBoxScroll">
-					{
-						this.state ?
-							this.state.Comments.map(item => {
-								console.log(item)
-							if(item.Approved) return(
-								<div style={{display:"grid"}} key={this.state.Comments.indexOf(item)}>
-									<hr style={{margin:"0 0 0.75vh 0", width:"100%"}}/>
-									<div className="Author">{item.Author}</div>
-									<div className="Comment">{item.Comment}</div>
-								</div>
-							)
-							else return null
-						}) : ""
-					}
-					</div>
-				</div>
-
 
 				<div className="ContactMethods">
 					<div style={{textAlign:"center", fontSize:"5.5vmin"}}>Submit A Comment!</div>
@@ -79,7 +57,6 @@ class Contact extends Component {
 										if(inputAuthor !== "" && inputComment !== "") {
 											let comments = await this.postComment()
 											this.setState({"Comments":comments.Comments})
-											console.log(this.state)
 											this.forceUpdate()
 										}
 										else alert("Must fill out both inputs")
@@ -87,6 +64,31 @@ class Contact extends Component {
 					</div>
 					<hr/>
 					<a className="Link" href="mailto:eamonntrim@gmail.com?subject=Contact%20Me%20Page%20Submission&body=Dear%20Eamonn,"><div style={{textAlign:"center", fontSize:"5.5vmin"}}>Email Me!</div></a>
+				</div>
+
+				<div className="DisplayCommentBox">
+				<div style={{textAlign:"center", fontSize:"5.5vmin"}}>Comments</div>
+					<div className="DisplayBoxScroll">
+					{
+						this.state && (this.state.Comments.length > 0) ?
+							this.state.Comments.map(item => {
+							if(item.Approved) return(
+								<div style={{display:"grid"}} key={this.state.Comments.indexOf(item)}>
+									<hr style={{margin:"0 0 0.75vh 0", width:"100%"}}/>
+									<div className="Author">{item.Author}</div>
+									<div className="Comment">{item.Comment}</div>
+								</div>
+							)
+							else return null
+						}) 
+						: 
+						<div id="NoComments">
+							<hr style={{margin:"0 0 0.75vh 0", width:"100%"}}/>
+							<div className="Author">Nothing comments yet!</div>
+							<div className="Comment">Be the first to comment!</div>
+						</div>
+					}
+					</div>
 				</div>
 
 			</div>
