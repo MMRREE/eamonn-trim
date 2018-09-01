@@ -21,44 +21,6 @@ let backendURL = ""
 var typingTimer
 
 class SpotifyApp extends Component {
-	constructor() {
-		super();
-
-		// let templatePlaylist = {
-		// 	Name: '',
-		// 	PlaylistImg: '',
-		// 	ContextUri: '',
-		// 	Songs: {
-		// 		template: {
-		// 			Name: '',
-		// 			Duration: '',
-		// 			Uri: '',
-		// 			ExternalUrl: ''
-		// 		}
-		// 	}
-		// }
-
-		this.state = {
-			FilterString: '',
-			ServerData: {
-				UserName: '',
-			},
-			PlayerInfo: {
-				PlayerObject: '',
-				DeviceId: '',
-				Volume: '',
-				Song: {
-					Name: '',
-					Artists: '',
-					Album: '',
-					AlbumImg: '',
-					Duration: '',
-					Uri: ''
-				}
-			}
-		}
-	}
-
 	handleScriptLoad(){
 		//script for running for the wed playback SDK
 		return new Promise(resolve =>{
@@ -72,6 +34,14 @@ class SpotifyApp extends Component {
 
 	async componentWillMount() {
 		this.handleScriptLoad()
+
+		this.setState({
+			FilterString:"",
+			FavoritesClicked:false,
+			SearchAlbums:null,
+			localTime:0
+		})
+
 		if ( window.location.href.includes( "localhost" ) ) backendURL = "http://localhost:8888/"
 		else if ( window.location.href.includes( "heroku" ) ) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
 		else backendURL = "http://" + window.location.hostname + ":8888/"
@@ -149,7 +119,6 @@ class SpotifyApp extends Component {
 					mode: 'cors'
 				}
 			)).json()
-			console.log(refreshTokenPayload)
 			if(refreshTokenPayload.RefreshToken){
 				console.log("new RT", refreshTokenPayload.RefreshToken)
 				this.setUpState( refreshTokenPayload.AccessToken, refreshTokenPayload.RefreshToken )
@@ -182,7 +151,7 @@ class SpotifyApp extends Component {
 	}
 
 	render() {
-		let filteredPlaylists = this.state.ServerData && this.state.ServerData.Playlists ? this.state.ServerData.Playlists.filter( Playlist => {
+		let filteredPlaylists = this.state && this.state.ServerData && this.state.ServerData.Playlists ? this.state.ServerData.Playlists.filter( Playlist => {
 			let filter = this.state.FilterString.toLowerCase()
 
 			let matchesPlaylist = Playlist.Name.toLowerCase()
@@ -194,7 +163,7 @@ class SpotifyApp extends Component {
 			return matchesPlaylist || matchesTrack
 		} ) : [];
 
-		let filteredFavArtists = this.state.ServerData && this.state.ServerData.FavArtists ? this.state.ServerData.FavArtists.filter( Playlist => {
+		let filteredFavArtists = this.state && this.state.ServerData && this.state.ServerData.FavArtists ? this.state.ServerData.FavArtists.filter( Playlist => {
 			let filter = this.state.FilterString.toLowerCase()
 
 			let matchesPlaylist = Playlist.Name.toLowerCase()
@@ -206,17 +175,16 @@ class SpotifyApp extends Component {
 			return matchesPlaylist || matchesTrack
 		} ) : []
 
-		let playlistToRender = this.state.SearchAlbums ? this.state.SearchAlbums : filteredPlaylists
+		let playlistToRender = this.state && this.state.SearchAlbums ? this.state.SearchAlbums : filteredPlaylists
 
 
-		playlistToRender = this.state.FavoritesClicked ? filteredFavArtists : playlistToRender
+		playlistToRender = this.state && this.state.FavoritesClicked ? filteredFavArtists : playlistToRender
 
-		let title = this.state.ServerData && this.state.ServerData.User && this.state.ServerData.User.Name && this.state.ServerData.Playlists ? this.state.ServerData.User.Name + "'s playList" : "";
+		let title = this.state && this.state.ServerData && this.state.ServerData.User && this.state.ServerData.User.Name && this.state.ServerData.Playlists ? this.state.ServerData.User.Name + "'s playList" : "";
 		title ? document.title = title : document.title = "Spotify Playlists"
-
 		return (
 			<div className="Spotify">
-				{this.state.ServerData.Playlists ?
+				{this.state && this.state.ServerData && this.state.ServerData.Playlists ?
 					// if signed in show the whole applicaiton
 					<div className="Display">
 						<NavBar style={{gridArea:"NavBar"}}/>
@@ -225,12 +193,14 @@ class SpotifyApp extends Component {
 									this.setState({PlayerInfo: player})
 							} accessToken={this.state.AccessToken}/>
 						<PlaylistCounter playlists={playlistToRender}/>
-						{!this.state.FavoritesClicked ? <HourCounter playlists={playlistToRender}/> : ""}
+						{!this.state.FavoritesClicked ? <HourCounter playlists={playlistToRender}/> : null}
 						<input type="button" value="Favorites" className="FavoriteButton" style={{gridArea:"FavoriteButton"}} onClick={()=>{
 							this.setState({"FavoritesClicked": true})
+							console.log(this.state)
 						}}/>
 						<input type="button" value="Playlists" className="PlaylistsButton" style={{gridArea:"PlaylistsButton"}} onClick={()=>{
 							this.setState({"FavoritesClicked": false})
+							console.log(this.state)
 						}}/>
 						<Filter onFilterChange={text =>{
 											this.setState({FilterString: text})
@@ -269,8 +239,8 @@ class SpotifyApp extends Component {
 													"search": text
 											 } )
 											}).then(response => response.json()).then(data=>{
-												console.log(data)
 												this.setState({"SearchAlbums": data})
+												console.log(this.state)
 											})}
 										else{
 											playlistToRender = this.state.UserPlaylists

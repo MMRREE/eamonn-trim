@@ -459,3 +459,41 @@
 }
 
 /* --- Playlist Display --- */
+
+
+
+/* User Profile */
+
+.Spotify > .Display > .UserProfile {
+	background: rgba(10,10,10,0.6);
+	display:grid;
+	grid-template-columns: 25% 75%;
+	grid-template-rows: 33% 33% 33%;
+	grid-template-areas: "Picture Name"
+	"Picture Country"
+	"Picutre Premium";
+}
+
+.Spotify > .Display > .UserProfile > .Name {
+	background: rgba(10,10,10,0.6);
+	grid-area:Name;
+}
+
+.Spotify > .Display > .UserProfile > .Picture {
+	width:100%;
+	border-radius: 50%;
+	background: rgba(10,10,10,0.6);
+	grid-area:Picture;
+}
+
+.Spotify > .Display > .UserProfile > .Premium {
+	background: rgba(10,10,10,0.6);
+	grid-area:Premium;
+}
+
+.Spotify > .Display > .UserProfile > .Country {
+	background: rgba(10,10,10,0.6);
+	grid-area:Country;
+}
+
+/* --- User Profile --- */

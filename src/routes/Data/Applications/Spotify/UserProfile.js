@@ -5,17 +5,13 @@ class UserProfile extends Component {
 		return (
 			<div className="UserProfile" style={{gridArea:"UserProfile"}}>
 
-				<div style={{background:"rgba(10,10,10,0.4)"}}>
+				<p className="Name">{this.props.UserData.Name}</p>
 
-					<p>{this.props.UserData.Name}</p>
+				<img className="Picture" src={this.props.UserData.Img} alt="Users"/>
 
-					<img style={{borderRadius:"50%"}} src={this.props.UserData.Img} alt="Users"/>
+				<p className="Premium" >Premium: {this.props.UserData.Type === "premium" ? "True" : "False"}</p>
 
-					<p>Premium: {this.props.UserData.Type === "premium" ? "True" : "False"}</p>
-
-					<p>{this.props.UserData.Country} - {this.props.UserData.Birthday}</p>
-
-				</div>
+				<p className="Country">{this.props.UserData.Country} - {this.props.UserData.Birthday}</p>
 
 			</div>
 		);
