@@ -18,67 +18,60 @@ import NotFound from './NotFound'
 import Layout from './Data/Applications/Components/Layout.js'
 
 class Routes extends Component {
-	findGreatest( dates ) {
+	findGreatestDate( dates ) {
 		let greatestYear = null
 		let greatestMonth = null
 		let greatestDay = null
-		dates.forEach( item => {
-			let year = item[ 6 ] + item[ 7 ] + item[ 8 ] + item[ 9 ]
-			let month = item[ 3 ] + item[ 4 ]
-			let day = item[ 0 ] + item[ 1 ]
-			if ( year >= greatestYear ) {
+		dates.forEach( date => {
+			let year = date[6] + date[7] + date[8] + date[9]
+			let month = date[3] + date[4]
+			let day = date[0] + date[1]
+			if (year >= greatestYear) {
 				greatestYear = year
 				greatestMonth = month
 				greatestDay = day
-				if ( month >= greatestMonth ) {
+				if (month >= greatestMonth) {
 					greatestMonth = month
 					greatestDay = day
-					if ( day >= greatestDay ) {
+					if (day >= greatestDay) {
 						greatestDay = day
 					}
 				}
 			}
 		} )
-		return ( greatestDay + "/" + greatestMonth + "/" + greatestYear )
+		return (greatestDay + "/" + greatestMonth + "/" + greatestYear)
 	}
 
 	componentDidMount() {
-		if ( Data ) {
-			let dates = Data.Applications.map( item => {
-				return item.Date
+		if (Data) {
+			let applicationDates = Data.Applications.map( application => {
+				return application.Date
 			} )
-			
-			let find = this.findGreatest( dates )
-			let greatestIndex = null
-			if (dates.length === 1) greatestIndex = 0
-			else{
-				greatestIndex = dates.findIndex( item => {
-					if ( item === find ) return ( dates.indexOf( item ) )
-					return ( 0 )
-				} )
-			}
+			let queryDate = this.findGreatestDate( applicationDates )
+			let greatestIndex = applicationDates.findIndex( application => {
+				if (application === queryDate) return applicationDates.indexOf( application )
+				return null
+			} )
+			if (applicationDates.length === 1) greatestIndex = 0
 
-			let ComponentsLocal = {}
-			let SketchesLocal = {}
-			Data.Applications.forEach( item => {
-				ComponentsLocal[ item.Name ] = require( './Data/Applications/' + item.Name + '.js' )
-					.default
+			let localComponents = {}
+			let localSketches = {}
+			Data.Applications.forEach( application => {
+				localComponents[application.Name] = require('./Data/Applications/' + application.Name + '.js').default
 			} )
 
-			Data.Designs.forEach( item => {
-				SketchesLocal[ item.Name ] = require( './Data/Designs/' + item.Name + '.js' )
-					.default
+			Data.Designs.forEach( design => {
+				localSketches[design.Name] = require('./Data/Designs/' + design.Name + '.js').default
 			} )
 
-			Data.Pages.forEach( item => {
-				ComponentsLocal[ item.Name ] = require( './' + item.Name + '.js' )
-					.default
+			Data.Pages.forEach( page => {
+				localComponents[page.Name] = require('./' + page.Name + '.js').default
 			} )
 
 			this.setState( {
-				MostRecent: Data.Applications[ greatestIndex ],
-				Components: ComponentsLocal,
-				Sketches: SketchesLocal
+				MostRecent: Data.Applications[greatestIndex],
+				Components: localComponents,
+				Sketches: localSketches
 			} )
 		}
 	}
@@ -91,71 +84,73 @@ class Routes extends Component {
 			 			<Route exact path="/" component={Home}/>
 
 						{/*Main pages path management based on data*/}
-						{Data
-							? Data.Pages.map(item=>{
+						{Data ?
+							Data.Pages.map(page=>{
 								return(
-									<Route key={Data.Pages.indexOf(item)} exact path={'/'+item.Name} component={
+									<Route key={Data.Pages.indexOf(page)} exact path={'/'+page.Name} component={
 										this.state
-										? this.state.Components[item.Name]
+										? this.state.Components[page.Name]
 										: NotFound
 									}/>
 								)
 							})
-							: ""
+							: null
 						}
 
 						{/*Applications path management from Data*/}
-					  	{Data
-							? Data.Applications.map(item => {
+					  	{Data ?
+							Data.Applications.map(app=>{
 							  	return(
-							  		<Route key={Data.Applications.indexOf(item)} exact path={"/Applications/"+item.Name} component={this.state
-										? this.state.Components[item.Name]
-										: NotFound}/>
-						  			)
-				  				})
-				  			: ""}
+							  		<Route key={Data.Applications.indexOf(app)} exact path={"/Applications/"+app.Name} component={this.state
+										? this.state.Components[app.Name]
+										: NotFound
+									}/>
+								)
+							})
+				  			: null
+						}
 
 						{/*Designs path management from Data*/}
-					  	{Data
-							? Data.Designs.map(item=>{
-						  	return(
-							  	<Route key={Data.Designs.indexOf(item)} exact path={"/Designs/"+item.Name} render={()=>
-									<div className={item.Name}>
+					  	{Data ?
+							Data.Designs.map(design=>{
+							  	return(
+								  	<Route key={Data.Designs.indexOf(design)} exact path={"/Designs/"+design.Name} render={()=>
+										<div className={design.Name}>
+											<Layout/>
+											<div className="Sketch" style={{position:"absolute", left:"12.5vw", top:"10vh", zIndex:"1", fontSize:"2.25vh", background:"rgba(10,10,10,0.25)"}}>
+												{design.Name}
+												<hr/>
+												{this.state ? <P5Wrapper sketch={this.state.Sketches[design.Name]}/> : ""
+											}
+											</div>
 
-										<Layout/>
-										<div className="Sketch" style={{position:"absolute", left:"12.5vw", top:"10vh", zIndex:"1", fontSize:"2.25vh", background:"rgba(10,10,10,0.25)"}}>
-											{item.Name}
-											<hr/>
-											{this.state ? <P5Wrapper sketch={this.state.Sketches[item.Name]}/> : ""
-										}
 										</div>
+									}/>
+							  	)
+						  	})
+						  	: null
+						}
 
-									</div>
-								}/>
-						  	)
-					  	})
-					  	: ""}
-
-						{Data
-							? Data.Blogs.map(item=>{
+						{Data ?
+							Data.Blogs.map(blog=>{
 								return(
-									<Route key={Data.Blogs.indexOf(item)} exact path={"/Blog/"+item.Name} render={()=>
-										<div className={"Blogpost "+item.Name}>
+									<Route key={Data.Blogs.indexOf(blog)} exact path={"/Blog/"+blog.Name} render={()=>
+										<div className={"Blogpost "+blog.Name}>
 											<Layout/>
 											<div className="Post">
 												<div className="ScrollBox">
-													<img className="Image" alt={item.Name} src={item.Image}/>
+													<img className="Image" alt={blog.Name} src={blog.Image}/>
 													<div className="Name">
-														<h1>{item.Name}</h1>
+														<h1>{blog.Name}</h1>
 														<hr/>
 													</div>
-													{item.Paragraphs.map(para=>{
-														return(<p key={item.Paragraphs.indexOf(para)}>{para}</p>)
+													{blog.Paragraphs.map(para=>{
+														return(<p key={blog.Paragraphs.indexOf(para)}>{para}</p>)
 													})}
 													<hr/>
 													<h1>Sources</h1>
-													{item.Sources.map(source=>{
-														return(<div key={item.Sources.indexOf(source)}>{source.Name+": "}<a href={source.Link}>{source.Link}</a></div>)
+													{blog.Sources.map(source=>{
+														return(<div key={blog.Sources.indexOf(source)}>{source.Name+": "}<a href={source.Link}>{source.Link}</a></div>)
 													})}
 													<div className="Spacing"/>
 												</div>
@@ -163,20 +158,22 @@ class Routes extends Component {
 										</div>
 									}/>
 								)
-							}) : ""}
+							}) 
+							: null
+						}
 
 					  	{/*Most recent path from Data*/}
 					  	{this.state
 							? <Route exact path={"/MostRecent"} component={this.state
 								? this.state.Components[this.state.MostRecent.Name]
 								: NotFound}/>
-							: ""
+							: null
 						}
 
 						{/*Not Found route for any undefined locations*/}
 			  			<Route path="*" component={NotFound}/>
 		 			</Switch>
-			 	</div>
+				</div>
 			</Router>
 		)
 	}

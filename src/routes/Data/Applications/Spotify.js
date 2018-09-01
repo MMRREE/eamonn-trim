@@ -21,55 +21,36 @@ let backendURL = ""
 var typingTimer
 
 class SpotifyApp extends Component {
-	constructor() {
-		super();
-
-		// let templatePlaylist = {
-		// 	Name: '',
-		// 	PlaylistImg: '',
-		// 	ContextUri: '',
-		// 	Songs: {
-		// 		template: {
-		// 			Name: '',
-		// 			Duration: '',
-		// 			Uri: '',
-		// 			ExternalUrl: ''
-		// 		}
-		// 	}
-		// }
-
-		this.state = {
-			FilterString: '',
-			ServerData: {
-				UserName: '',
-			},
-			PlayerInfo: {
-				PlayerObject: '',
-				DeviceId: '',
-				Volume: '',
-				Song: {
-					Name: '',
-					Artists: '',
-					Album: '',
-					AlbumImg: '',
-					Duration: '',
-					Uri: ''
-				}
+	handleScriptLoad(){
+		//script for running for the wed playback SDK
+		return new Promise(resolve =>{
+			if(window.Spotify){
+				resolve()
+			} else{
+				window.onSpotifyWebPlaybackSDKReady = resolve;
 			}
-		}
+		})
 	}
 
-	componentDidMount() {
+	async componentWillMount() {
+		this.handleScriptLoad()
+
+		this.setState({
+			FilterString:"",
+			FavoritesClicked:false,
+			SearchAlbums:null,
+			localTime:0
+		})
+
 		if ( window.location.href.includes( "localhost" ) ) backendURL = "http://localhost:8888/"
 		else if ( window.location.href.includes( "heroku" ) ) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
 		else backendURL = "http://" + window.location.hostname + ":8888/"
-		console.log( backendURL )
 		redirect_uri = document.location.origin + '/Applications/Spotify/'
-		console.log( redirect_uri )
 
 		if ( queryString.parse( window.location.search )
 			.code ) {
-			fetch(
+			let tokenPayload = await(
+				await fetch(
 					backendURL + "spotify/token", {
 						method: "POST",
 						body: JSON.stringify( {
@@ -81,82 +62,75 @@ class SpotifyApp extends Component {
 						headers: { 'Content-Type': 'application/json' },
 						mode: 'cors'
 					}
-				)
-				.then( response => response.json() )
-				.then( data => {
-					console.log( data )
-					if ( data.error === "invalid_grant" ) {
-						this.login()
-							.then( url => {
-								window.location.href = url
-							} )
-					}
-					this.setUpState( data.AccessToken, data.RefreshToken )
-					this.interval = setInterval( () => this.tick(), 1000 )
-				} )
+				)).json()
+			if(tokenPayload.error === "invalid_grant"){
+				let redirect = await this.login()
+				window.location.href = redirect
+			}
+			else{
+				await this.setUpState(tokenPayload.AccessToken, tokenPayload.RefreshToken, true)
+				this.interval = setInterval(()=>this.tick(), 1000)
+			}
+			if(this.state.ServerData.UserName !== "") console.log(this.state)
 		}
-
-		//script for running for the wed playback SDK
-		const script = document.createElement( "script" );
-		script.src = "https://sdk.scdn.co/spotify-player.js";
-		script.async = true;
-		document.body.appendChild( script );
-		this.setState( {
-			count: 0,
-			localTime: 0
-		} )
 	}
 
-	tick() {
-		this.setState( { localTime: this.state.localTime + 1 } )
-		// console.log(this.state.localTime)
-		if ( this.state.localTime >= 3600 ) {
-
-			fetch(
-					backendURL + 'spotify/token', {
+	async setUpState( accessToken = null, refreshToken = null, refresh = false ) {
+		if ( accessToken ) {
+			if(refresh) {
+				let playlistData = await(
+					await fetch( backendURL + 'spotify/playlistData', {
 						method: "POST",
-						body: JSON.stringify( {
-							"grant_type": "refresh_token",
-							"refresh_token": this.state.RefreshToken
-						} ),
 						headers: { 'content-type': 'application/json' },
-						mode: 'cors'
-					}
-				)
-				.then( response => response.json() )
-				.then( data => {
-					if ( data.RefreshToken ) {
-						// console.log("new RT", data.RefreshToken)
-						this.fetchAppData( data.AccessToken, data.RefreshToken )
-					} else { this.fetchAppData( data.AccessToken, this.state.RefreshToken ) }
-					this.setState( { localTime: 0 } )
-				} )
+						mode: 'cors',
+						body: JSON.stringify( { "access_token": accessToken } )
+					} )).json()
+				this.setState({
+					ServerData: playlistData,
+					AccessToken: accessToken,
+					RefreshToken: refreshToken
+				})
+			} else{
+				this.setState({
+					AccessToken: accessToken,
+					RefreshToken: refreshToken
+				})
+			}
+			if(this.state.ServerData.Playlists) this.setState({
+				"UserPlaylists": this.state.ServerData.Playlists
+			})
+		}
+	}
+
+
+	async tick() {
+		this.setState( { localTime: this.state.localTime + 1 } )
+
+		if ( this.state.localTime >= 3600 ) {
+			let refreshTokenPayload = await(
+				await fetch(
+				backendURL + 'spotify/token', {
+					method: "POST",
+					body: JSON.stringify( {
+						"grant_type": "refresh_token",
+						"refresh_token": this.state.RefreshToken
+					} ),
+					headers: { 'content-type': 'application/json' },
+					mode: 'cors'
+				}
+			)).json()
+			if(refreshTokenPayload.RefreshToken){
+				console.log("new RT", refreshTokenPayload.RefreshToken)
+				this.setUpState( refreshTokenPayload.AccessToken, refreshTokenPayload.RefreshToken )
+			} else{
+				this.setUpState( refreshTokenPayload.AccessToken, this.state.RefreshToken )
+			}
+			this.setState( { localTime: 0 } )
 		}
 	}
 
 	componentWillUnmount() {
 		clearInterval( this.interval )
-	}
-
-	setUpState( accessToken = null, refreshToken = null ) {
-		if ( accessToken ) {
-			fetch( backendURL + 'spotify/playlistData', {
-					method: "POST",
-					headers: { 'content-type': 'application/json' },
-					mode: 'cors',
-					body: JSON.stringify( { "access_token": accessToken } )
-				} )
-				.then( response => response.json() )
-				.then( data => {
-					this.setState( {
-						ServerData: data,
-						AccessToken: accessToken
-					} )
-					this.state.ServerData && this.state.ServerData.User &&
-						this.state.ServerData.User.Name && this.state.ServerData.Playlists ? this.setState( { "UserPlaylists": this.state.ServerData.Playlists } ) : this.Nada()
-					console.log( this.state )
-				} )
-		}
 	}
 
 	login( callback ) {
@@ -176,13 +150,8 @@ class SpotifyApp extends Component {
 		}
 	}
 
-	Nada() {
-
-	}
-
 	render() {
-		let count = 0;
-		let filteredPlaylists = this.state.ServerData && this.state.ServerData.Playlists ? this.state.ServerData.Playlists.filter( Playlist => {
+		let filteredPlaylists = this.state && this.state.ServerData && this.state.ServerData.Playlists ? this.state.ServerData.Playlists.filter( Playlist => {
 			let filter = this.state.FilterString.toLowerCase()
 
 			let matchesPlaylist = Playlist.Name.toLowerCase()
@@ -194,7 +163,7 @@ class SpotifyApp extends Component {
 			return matchesPlaylist || matchesTrack
 		} ) : [];
 
-		let filteredFavArtists = this.state.ServerData && this.state.ServerData.FavArtists ? this.state.ServerData.FavArtists.filter( Playlist => {
+		let filteredFavArtists = this.state && this.state.ServerData && this.state.ServerData.FavArtists ? this.state.ServerData.FavArtists.filter( Playlist => {
 			let filter = this.state.FilterString.toLowerCase()
 
 			let matchesPlaylist = Playlist.Name.toLowerCase()
@@ -206,34 +175,32 @@ class SpotifyApp extends Component {
 			return matchesPlaylist || matchesTrack
 		} ) : []
 
-		let playlistToRender = this.state.SearchAlbums ? this.state.SearchAlbums : filteredPlaylists
+		let playlistToRender = this.state && this.state.SearchAlbums ? this.state.SearchAlbums : filteredPlaylists
 
 
-		playlistToRender = this.state.FavoritesClicked ? filteredFavArtists : playlistToRender
+		playlistToRender = this.state && this.state.FavoritesClicked ? filteredFavArtists : playlistToRender
 
-		let title = this.state.ServerData && this.state.ServerData.User && this.state.ServerData.User.Name && this.state.ServerData.Playlists ? this.state.ServerData.User.Name + "'s playList" : "";
+		let title = this.state && this.state.ServerData && this.state.ServerData.User && this.state.ServerData.User.Name && this.state.ServerData.Playlists ? this.state.ServerData.User.Name + "'s playList" : "";
 		title ? document.title = title : document.title = "Spotify Playlists"
-
 		return (
 			<div className="Spotify">
-				{this.state.ServerData.Playlists ?
+				{this.state && this.state.ServerData && this.state.ServerData.Playlists ?
 					// if signed in show the whole applicaiton
 					<div className="Display">
 						<NavBar style={{gridArea:"NavBar"}}/>
-						{/*<h1 className="Header">{title}</h1>*/}
 						<UserProfile UserData={this.state.ServerData.User}/>
 						<SpotifyPlayer className="Player" playerObjectUpdate={player =>
 									this.setState({PlayerInfo: player})
 							} accessToken={this.state.AccessToken}/>
 						<PlaylistCounter playlists={playlistToRender}/>
-						{!this.state.FavoritesClicked ? <HourCounter playlists={playlistToRender}/> : ""}
+						{!this.state.FavoritesClicked ? <HourCounter playlists={playlistToRender}/> : null}
 						<input type="button" value="Favorites" className="FavoriteButton" style={{gridArea:"FavoriteButton"}} onClick={()=>{
-							// console.log("Favorites")
 							this.setState({"FavoritesClicked": true})
+							console.log(this.state)
 						}}/>
 						<input type="button" value="Playlists" className="PlaylistsButton" style={{gridArea:"PlaylistsButton"}} onClick={()=>{
-							// console.log("Playlists")
 							this.setState({"FavoritesClicked": false})
+							console.log(this.state)
 						}}/>
 						<Filter onFilterChange={text =>{
 											this.setState({FilterString: text})
@@ -272,8 +239,8 @@ class SpotifyApp extends Component {
 													"search": text
 											 } )
 											}).then(response => response.json()).then(data=>{
-												console.log(data)
 												this.setState({"SearchAlbums": data})
+												console.log(this.state)
 											})}
 										else{
 											playlistToRender = this.state.UserPlaylists
@@ -283,7 +250,7 @@ class SpotifyApp extends Component {
 						{playlistToRender.map(Playlist =>
 							{
 								return(
-								<PlaylistDisplay key={count++} token={this.state.AccessToken} index={count} playlist={Playlist}/>
+								<PlaylistDisplay key={playlistToRender.indexOf(Playlist)} token={this.state.AccessToken} index={playlistToRender.indexOf(Playlist)} playlist={Playlist}/>
 							)}
 						)
 						}

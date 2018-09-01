@@ -58,26 +58,25 @@
 	position: absolute;
 	padding-right:20px;
 	display:grid;
-	justify-content: center;
 	grid-template-columns:25% 25% 25% 25%;
 	grid-template-rows:auto auto 10vh auto;
 	grid-template-areas:
 	"Player Player Player Player"
 	"UserProfile PlaylistList Hours NavBar"
 	"PlaylistsButton Filter Filter FavoriteButton"
-	"Playlists1 Playlists2 Playlists3 Playlists4"
-	"Playlists5 Playlists6 Playlists7 Playlists8"
-	"Playlists9 Playlists10 Playlists11 Playlists12"
-	"Playlists13 Playlists14 Playlists15 Playlists16"
-	"Playlists17 Playlists18 Playlists19 Playlists20"
-	"Playlists21 Playlists22 Playlists23 Playlists24"
-	"Playlists25 Playlists26 Playlists27 Playlists28"
-	"Playlists29 Playlists30 Playlists31 Playlists32"
-	"Playlists33 Playlists34 Playlists35 Playlists36"
-	"Playlists37 Playlists38 Playlists39 Playlists40"
-	"Playlists41 Playlists42 Playlists43 Playlists44"
-	"Playlists45 Playlists46 Playlists47 Playlists48"
-	"Playlists49 Playlists50 Playlists51 Playlists52";
+	"Playlists0 Playlists1 Playlists2 Playlists3"
+	"Playlist4 Playlists5 Playlists6 Playlists7"
+	"Playlists8 Playlists9 Playlists10 Playlists11"
+	"Playlists12 Playlists13 Playlists14 Playlists15"
+	"Playlists16 Playlists17 Playlists18 Playlists19"
+	"Playlists20 Playlists21 Playlists22 Playlists23"
+	"Playlists24 Playlists25 Playlists26 Playlists27"
+	"Playlists28 Playlists29 Playlists30 Playlists31"
+	"Playlists32 Playlists33 Playlists34 Playlists35"
+	"Playlists36 Playlists37 Playlists38 Playlists39"
+	"Playlists40 Playlists41 Playlists42 Playlists43"
+	"Playlists44 Playlists45 Playlists46 Playlists47"
+	"Playlists48 Playlists49 Playlists50 Playlists51";
 	text-align: center;
 	top: 0px
 }
@@ -460,3 +459,41 @@
 }
 
 /* --- Playlist Display --- */
+
+
+
+/* User Profile */
+
+.Spotify > .Display > .UserProfile {
+	background: rgba(10,10,10,0.6);
+	display:grid;
+	grid-template-columns: 25% 75%;
+	grid-template-rows: 33% 33% 33%;
+	grid-template-areas: "Picture Name"
+	"Picture Country"
+	"Picutre Premium";
+}
+
+.Spotify > .Display > .UserProfile > .Name {
+	background: rgba(10,10,10,0.6);
+	grid-area:Name;
+}
+
+.Spotify > .Display > .UserProfile > .Picture {
+	width:100%;
+	border-radius: 50%;
+	background: rgba(10,10,10,0.6);
+	grid-area:Picture;
+}
+
+.Spotify > .Display > .UserProfile > .Premium {
+	background: rgba(10,10,10,0.6);
+	grid-area:Premium;
+}
+
+.Spotify > .Display > .UserProfile > .Country {
+	background: rgba(10,10,10,0.6);
+	grid-area:Country;
+}
+
+/* --- User Profile --- */

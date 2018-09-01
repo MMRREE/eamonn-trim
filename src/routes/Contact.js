@@ -5,43 +5,38 @@ import './Stylesheets/Contact.css'
 
 let inputAuthor = ""
 let inputComment = ""
-let Comments = []
 let backendURL = ""
 
 class Contact extends Component {
-	postComment() {
-		return fetch( backendURL + 'contact/comments', {
+	async postComment() {
+		const ret = await(
+			await fetch( backendURL + 'contact/comments', {
 				method: "POST",
 				body: JSON.stringify( {
 					"Comment": {
 						"Author": inputAuthor,
 						"Comment": inputComment,
-						"Approved": true
+						"Approved": false
 					}
 				} ),
 				headers: { 'content-type': 'application/json' },
 				mode: "cors"
-			} )
-			.then( response => response.json() )
+			} )).json()
+		return ret
 	}
 
-	componentDidMount() {
-		console.log( window.location.href )
+	async componentDidMount() {
 		if ( window.location.href.includes( "localhost" ) ) backendURL = "http://localhost:8888/"
 		else if ( window.location.href.includes( "heroku" ) ) backendURL = "https://eamonn-trim-backend.herokuapp.com/"
-		console.log( backendURL )
-		fetch( backendURL + 'contact/comments', {
+		else backendURL = "http://" + window.location.hostname + ":8888/"
+		let comments =  await(
+			await fetch( backendURL + 'contact/comments', {
 				method: "GET",
 				headers: { 'content-type': 'application/json' },
 				mode: "cors"
 			} )
-			.then( response => response.json() )
-			.then( data => {
-				Comments = data.Comments
-				if ( Comments !== null ) this.setState( { Comments: Comments } )
-				else this.setState( { Comments: null } )
-				console.log( this.state )
-			} )
+		).json()
+		this.setState({Comments:comments.Comments})
 	}
 
 	render() {
@@ -49,25 +44,6 @@ class Contact extends Component {
 			<div className="Contact">
 
 				<Layout/>
-
-				<div className="DisplayCommentBox">
-				<div style={{textAlign:"center", fontSize:"5.5vmin"}}>Comments</div>
-					<div className="DisplayBoxScroll">
-					{this.state ?
-						this.state.Comments.map(item => {
-							console.log(item)
-						if(item.Approved) return(
-							<div style={{display:"grid"}} key={this.state.Comments.indexOf(item)}>
-								<hr style={{margin:"0 0 0.75vh 0", width:"100%"}}/>
-								<div className="Author">{item.Author}</div>
-								<div className="Comment">{item.Comment}</div>
-							</div>
-						)
-						else return null
-					}) : ""}
-					</div>
-				</div>
-
 
 				<div className="ContactMethods">
 					<div style={{textAlign:"center", fontSize:"5.5vmin"}}>Submit A Comment!</div>
@@ -77,19 +53,42 @@ class Contact extends Component {
 						<input className="Input InputText" maxLength="70" style={{gridArea:"AuthorInput"}} type="text" placeholder="Author" onKeyUp={event => inputAuthor = event.target.value}/>
 						<div style={{gridArea:"CommentTag"}}>Comment:</div>
 						<textarea className="Input InputText" maxLength="340" style={{gridArea:"CommentInput", height:"12em"}} type="text" placeholder="Comment" onKeyUp={event => inputComment = event.target.value}/>
-						<input className="Input" style={{gridArea:"Submit"}} type="button" value="Submit" onClick={event => {
+						<input className="Input" style={{gridArea:"Submit"}} type="button" value="Submit" onClick={async (event) => {
 										if(inputAuthor !== "" && inputComment !== "") {
-											this.postComment().then(data => {
-												this.setState({"Comments":data.Comments})
-												console.log(this.state)
-												this.forceUpdate()
-											})
+											let comments = await this.postComment()
+											this.setState({"Comments":comments.Comments})
+											this.forceUpdate()
 										}
 										else alert("Must fill out both inputs")
 									}}/>
 					</div>
 					<hr/>
 					<a className="Link" href="mailto:eamonntrim@gmail.com?subject=Contact%20Me%20Page%20Submission&body=Dear%20Eamonn,"><div style={{textAlign:"center", fontSize:"5.5vmin"}}>Email Me!</div></a>
+				</div>
+
+				<div className="DisplayCommentBox">
+				<div style={{textAlign:"center", fontSize:"5.5vmin"}}>Comments</div>
+					<div className="DisplayBoxScroll">
+					{
+						this.state && (this.state.Comments.length > 0) ?
+							this.state.Comments.map(item => {
+							if(item.Approved) return(
+								<div style={{display:"grid"}} key={this.state.Comments.indexOf(item)}>
+									<hr style={{margin:"0 0 0.75vh 0", width:"100%"}}/>
+									<div className="Author">{item.Author}</div>
+									<div className="Comment">{item.Comment}</div>
+								</div>
+							)
+							else return null
+						}) 
+						: 
+						<div id="NoComments">
+							<hr style={{margin:"0 0 0.75vh 0", width:"100%"}}/>
+							<div className="Author">Nothing comments yet!</div>
+							<div className="Comment">Be the first to comment!</div>
+						</div>
+					}
+					</div>
 				</div>
 
 			</div>
