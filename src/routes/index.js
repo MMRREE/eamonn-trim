@@ -47,7 +47,6 @@ class Routes extends Component {
 			let applicationDates = Data.Applications.map( application => {
 				return application.Date
 			} )
-
 			let queryDate = this.findGreatestDate( applicationDates )
 			let greatestIndex = applicationDates.findIndex( application => {
 				if (application === queryDate) return applicationDates.indexOf( application )
