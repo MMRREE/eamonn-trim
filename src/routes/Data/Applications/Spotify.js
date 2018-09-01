@@ -140,6 +140,9 @@ class SpotifyApp extends Component {
 				client_id: client_id,
 				scope: scopes,
 				redirect_uri: redirect_uri
+			}, {
+				encode: false,
+				strict: false
 			} )
 		if ( callback ) {
 			return callback( url_login );
