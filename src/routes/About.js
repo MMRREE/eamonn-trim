@@ -31,8 +31,6 @@ class About extends Component {
 						I was born in Epsom, England, grew up in Switzerland. Whilst at high school, although I wasn't offered any classes in technology or computer science I had a keen interest in this area, teaching myself to code and building my own computer. Coming to pick my unviersity course I decided to follow that route and pick Electrical and Electronic Engineering at University of Southampton. I am looking to develop this website for myself but also to demonstrate how even though at University I was not formally taught HTML, Javascript or CSS, it is all easy to learn and able to build a professional looking website on self taught knowledge.
 						<br style={{marginBottom:"15px"}}/>
 						I was educated in Switzerland at Haut-Lac International Billingual School, from primary through to secondary school and still have permanent residence there outside of term time. Witin term time I am studying and living in Southampton. To read more about the website read the paragraph on the right. Otherwise, please enjoy the website!
-						{//'
-					}
 					</div>
 				<hr/>
 				<a className="Link" href={document.location.origin+"/Contact"}>Check out the contact page here!</a>
